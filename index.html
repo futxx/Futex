@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Canais Ao Vivo</title>
+    <title>FutX - Canais Ao Vivo</title>
     
-    <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     
     <style>
@@ -26,13 +25,66 @@
             padding: 20px;
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #00ff88;
+        /* Tela de Bloqueio (Acesso Negado ou Sem Token) */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid #00ff88;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        /* Container da Logo FutX */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            fill: #00ff88;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 1.8rem;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #a3a3a3 50%, #00ff88 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text span {
+            color: #00ff88;
+            -webkit-text-fill-color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
         }
 
         /* Container do Player */
@@ -162,27 +214,37 @@
 </head>
 <body>
 
-    <h1>Canais Ao Vivo</h1>
+    <div id="login-screen">
+        <div class="login-box">
+            <svg class="logo-icon" viewBox="0 0 24 24" style="margin-bottom: 15px; width: 60px; height: 60px;">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C13.1,4 14.15,4.28 15.1,4.77L13.84,8.64L9.42,8.12L8.24,4.55C9.4,4.2 10.67,4 12,4M6.21,6C6.73,6.5 7.15,7.12 7.42,7.81L8.33,10.59L5.05,12.72L3.1,10.03C3.78,8.4 4.87,7 6.21,6M17.79,6C19.13,7 20.22,8.4 20.9,10.03L18.95,12.72L15.67,10.59L16.58,7.81C16.85,7.12 17.27,6.5 17.79,6M12,10.74L14.73,12.5L13.68,15.71H10.32L9.27,12.5L12,10.74M4.7,14.06L7.81,12.04L8.86,15.25L6.64,18.3C5.55,17.2 4.84,15.71 4.7,14.06M19.3,14.06C19.16,15.71 18.45,17.2 17.36,18.3L15.14,15.25L16.19,12.04L19.3,14.06M12,18C11.1,18 10.22,17.86 9.4,17.6L10.65,19.43C11.1,19.47 11.55,19.5 12,19.5C12.45,19.5 12.9,19.47 13.35,19.43L14.6,17.6C13.78,17.86 12.9,18 12,18Z"/>
+            </svg>
+            <h2 style="margin-bottom: 10px; color: #fff;">FutX Premium</h2>
+            <p id="login-feedback" style="font-size: 0.95rem; color: #ff4a4a; font-weight: bold; margin-top: 15px;">
+                Verificando credenciais de acesso...
+            </p>
+        </div>
+    </div>
+
+    <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 24 24">
+            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C13.1,4 14.15,4.28 15.1,4.77L13.84,8.64L9.42,8.12L8.24,4.55C9.4,4.2 10.67,4 12,4M6.21,6C6.73,6.5 7.15,7.12 7.42,7.81L8.33,10.59L5.05,12.72L3.1,10.03C3.78,8.4 4.87,7 6.21,6M17.79,6C19.13,7 20.22,8.4 20.9,10.03L18.95,12.72L15.67,10.59L16.58,7.81C16.85,7.12 17.27,6.5 17.79,6M12,10.74L14.73,12.5L13.68,15.71H10.32L9.27,12.5L12,10.74M4.7,14.06L7.81,12.04L8.86,15.25L6.64,18.3C5.55,17.2 4.84,15.71 4.7,14.06M19.3,14.06C19.16,15.71 18.45,17.2 17.36,18.3L15.14,15.25L16.19,12.04L19.3,14.06M12,18C11.1,18 10.22,17.86 9.4,17.6L10.65,19.43C11.1,19.47 11.55,19.5 12,19.5C12.45,19.5 12.9,19.47 13.35,19.43L14.6,17.6C13.78,17.86 12.9,18 12,18Z"/>
+        </svg>
+        <span class="logo-text">Fut<span>X</span></span>
+    </div>
 
     <div class="player-container">
-        <!-- Banner de aviso de erro se a stream cair -->
         <div id="error-screen" class="player-error-msg">
             <p style="font-size: 1.2rem; margin-bottom: 10px;">⚠️ Canal Temporariamente Fora do Ar</p>
             <p style="font-size: 0.9rem; color: #aaa;">Tente selecionar outro canal ou aguarde alguns instantes.</p>
         </div>
 
-        <video 
-            id="live-player" 
-            class="video-js vjs-default-skin vjs-big-play-centered" 
-            controls 
-            preload="auto" 
-            data-setup='{}'>
+        <video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'>
             <source src="https://speed.megafilmeshd9.com/speed-3/playlist/7717654.m3u8?jw=1&auto_quality=0" type="application/x-mpegURL">
             Seu navegador não suporta este formato de vídeo.
         </video>
     </div>
 
-    <!-- Botões de Filtragem por Categoria -->
     <div class="filter-container">
         <button class="filter-btn active" onclick="filterChannels('all', this)">Todos</button>
         <button class="filter-btn" onclick="filterChannels('premiere', this)">Premiere</button>
@@ -191,145 +253,196 @@
     </div>
 
     <div class="channels-grid">
-        
-        <!-- ================= PREMIERE (data-category="premiere") ================= -->
-        <div class="channel-card active" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717654.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card active" data-category="premiere" onclick="changeChannel('premiere_clubes', this)">
             <img class="channel-logo" src="https://i.ibb.co/ZRkkfJNj/premiereclubes.png" alt="Premiere Clubes 4K">
             <div class="channel-name">Premiere Clubes 4K</div>
         </div>
-
-        <div class="channel-card" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717651.m3u8', this)">
+        <div class="channel-card" data-category="premiere" onclick="changeChannel('premiere_2', this)">
             <img class="channel-logo" src="https://i.ibb.co/CQ0gFRj/pfc2.png" alt="Premiere 2 HD">
             <div class="channel-name">Premiere 2 HD</div>
         </div>
-
-        <div class="channel-card" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717643.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="premiere" onclick="changeChannel('premiere_5', this)">
             <img class="channel-logo" src="https://i.ibb.co/pwDkSGX/pfc5.png" alt="Premiere 5 FHD">
             <div class="channel-name">Premiere 5 FHD</div>
         </div>
-
-        <div class="channel-card" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717640.m3u8', this)">
+        <div class="channel-card" data-category="premiere" onclick="changeChannel('premiere_6', this)">
             <img class="channel-logo" src="https://i.ibb.co/fQMJ3Y5/pfc6.png" alt="Premiere 6 FHD">
             <div class="channel-name">Premiere 6 FHD</div>
         </div>
-
-        <div class="channel-card" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717637.m3u8', this)">
+        <div class="channel-card" data-category="premiere" onclick="changeChannel('premiere_7', this)">
             <img class="channel-logo" src="https://i.ibb.co/c865zPB/pfc7.png" alt="Premiere 7 FHD">
             <div class="channel-name">Premiere 7 FHD</div>
         </div>
-
-        <div class="channel-card" data-category="premiere" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717633.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="premiere" onclick="changeChannel('premiere_8', this)">
             <img class="channel-logo" src="https://i.ibb.co/F52jGZb/pfc8.png" alt="Premiere 8 FHD">
             <div class="channel-name">Premiere 8 FHD</div>
         </div>
 
-        <!-- ================= SPORTV (data-category="sportv") ================= -->
-        <div class="channel-card" data-category="sportv" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717824.m3u8', this)">
+        <div class="channel-card" data-category="sportv" onclick="changeChannel('sportv_1', this)">
             <img class="channel-logo" src="https://i.ibb.co/JgkTbZd/sportv.png" alt="SporTV HD">
             <div class="channel-name">SporTV HD</div>
         </div>
-
-        <div class="channel-card" data-category="sportv" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717820.m3u8', this)">
+        <div class="channel-card" data-category="sportv" onclick="changeChannel('sportv_2', this)">
             <img class="channel-logo" src="https://i.ibb.co/MkYYHQzT/sportv2.png" alt="SporTV 2 HD">
             <div class="channel-name">SporTV 2 HD</div>
         </div>
-
-        <div class="channel-card" data-category="sportv" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717813.m3u8', this)">
+        <div class="channel-card" data-category="sportv" onclick="changeChannel('sportv_3', this)">
             <img class="channel-logo" src="https://i.ibb.co/C5121SkN/sportv3.png" alt="SporTV 3 HD">
             <div class="channel-name">SporTV 3 HD</div>
         </div>
 
-        <!-- ================= ESPN (data-category="espn") ================= -->
-        <div class="channel-card" data-category="espn" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717311.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="espn" onclick="changeChannel('espn_1', this)">
             <img class="channel-logo" src="https://i.ibb.co/RGCMyMQ6/espn.png" alt="ESPN 1 HD">
             <div class="channel-name">ESPN 1 HD</div>
         </div>
-
-        <div class="channel-card" data-category="espn" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717308.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="espn" onclick="changeChannel('espn_2', this)">
             <img class="channel-logo" src="https://i.ibb.co/rGPghkMN/espn2.png" alt="ESPN 2 HD">
             <div class="channel-name">ESPN 2 HD</div>
         </div>
-
-        <div class="channel-card" data-category="espn" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717305.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="espn" onclick="changeChannel('espn_3', this)">
             <img class="channel-logo" src="https://i.ibb.co/5hJxqNHp/espn3.png" alt="ESPN 3 HD">
             <div class="channel-name">ESPN 3 HD</div>
         </div>
-
-        <div class="channel-card" data-category="espn" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717301.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="espn" onclick="changeChannel('espn_4', this)">
             <img class="channel-logo" src="https://i.ibb.co/vvDp3zY0/espn4.png" alt="ESPN 4 HD">
             <div class="channel-name">ESPN 4 HD</div>
         </div>
-
-        <div class="channel-card" data-category="espn" onclick="changeChannel('https://speed.megafilmeshd9.com/speed-3/playlist/7717293.m3u8?jw=1&auto_quality=0', this)">
+        <div class="channel-card" data-category="espn" onclick="changeChannel('espn_6', this)">
             <img class="channel-logo" src="https://i.ibb.co/gb5Yfvjk/espn6.png" alt="ESPN 6 HD">
             <div class="channel-name">ESPN 6 HD</div>
         </div>
-
     </div>
 
-    <!-- Script Video.js -->
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
-        // Inicializa o player de vídeo
+        // BANCO DE DADOS DE LINKS CENTRALIZADO
+        const CANAIS_DATABASE = {
+            "premiere_clubes": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717654.m3u8?jw=1&auto_quality=0", backup: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717654.m3u8" },
+            "premiere_2": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717651.m3u8", backup: "" },
+            "premiere_5": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717643.m3u8?jw=1&auto_quality=0", backup: "" },
+            "premiere_6": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717640.m3u8", backup: "" },
+            "premiere_7": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717637.m3u8", backup: "" },
+            "premiere_8": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717633.m3u8?jw=1&auto_quality=0", backup: "" },
+            "sportv_1": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717824.m3u8", backup: "" },
+            "sportv_2": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717820.m3u8", backup: "" },
+            "sportv_3": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/fallback/7717813.m3u8", backup: "" },
+            "espn_1": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717311.m3u8?jw=1&auto_quality=0", backup: "" },
+            "espn_2": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717308.m3u8?jw=1&auto_quality=0", backup: "" },
+            "espn_3": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717305.m3u8?jw=1&auto_quality=0", backup: "" },
+            "espn_4": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717301.m3u8?jw=1&auto_quality=0", backup: "" },
+            "espn_6": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717293.m3u8?jw=1&auto_quality=0", backup: "" }
+        };
+
         const player = videojs('live-player');
         const errorScreen = document.getElementById('error-screen');
+        
+        let canalAtualKey = "premiere_clubes"; 
+        let usandoBackup = false;
+        let tentativasReconexao = 0;
+        const MAX_TENTATIVAS = 3;
 
-        // Monitoramento de Erros do Player
-        player.on('error', function() {
-            errorScreen.style.display = 'flex';
-        });
+        // LEITURA DO LINK DIRETO OU CACHE LOCAL
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenNaUrl = urlParams.get('token');
+            const tokenSalvo = localStorage.getItem('futx_token');
 
-        // Função para trocar de canal ao clicar
-        function changeChannel(streamUrl, cardElement) {
-            // Oculta a tela de erro antes de tentar carregar o novo canal
-            errorScreen.style.display = 'none';
+            if (tokenNaUrl) {
+                // Se o cliente acessou pelo link gerado, processa e salva
+                processarToken(tokenNaUrl);
+            } else if (tokenSalvo) {
+                // Se já acessou antes no mesmo dispositivo, entra sem pedir nada
+                processarToken(tokenSalvo, true);
+            } else {
+                // Bloqueia se não tiver chave na URL nem salva no celular
+                const feedback = document.getElementById('login-feedback');
+                feedback.innerHTML = 'Acesso Restrito.<br><span style="font-size:0.85rem; color:#aaa; font-weight:normal;">Utilize o link premium exclusivo enviado pelo administrador para assistir.</span>';
+            }
+        };
 
-            // Altera a fonte do player
-            player.src({
-                src: streamUrl,
-                type: 'application/x-mpegURL'
-            });
+        // VALIDADOR DA CRIPTOGRAFIA DO TOKEN
+        function processarToken(tokenInput, ehAutomatico = false) {
+            const feedback = document.getElementById('login-feedback');
 
-            // Tenta dar play tratando a política de autoplay do navegador
-            const playPromise = player.play();
-
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Reprodução iniciada com sucesso
-                }).catch(error => {
-                    console.log("Autoplay bloqueado. Iniciando no modo silencioso.");
-                    player.muted(true);
-                    player.play();
-                });
+            if (!tokenInput.startsWith("FTX-")) {
+                feedback.innerText = "Link de acesso inválido ou corrompido.";
+                return;
             }
 
-            // Atualiza a classe ativa nos cards para destacar o canal atual
-            document.querySelectorAll('.channel-card').forEach(card => {
-                card.classList.remove('active');
+            try {
+                const hash = tokenInput.replace("FTX-", "");
+                const decodificado = atob(hash); // Descriptografa a chave
+                const [email, dataExpiraStr] = decodificado.split("|");
+
+                const expiraEm = new Date(dataExpiraStr);
+                const agora = new Date();
+                
+                // Força o vencimento no último segundo do dia limite
+                expiraEm.setHours(23, 59, 59, 999);
+                agora.setHours(0, 0, 0, 0);
+
+                if (agora <= expiraEm) {
+                    // Guarda o token no celular/computador do cliente
+                    localStorage.setItem('futx_token', tokenInput);
+                    
+                    // Libera e esconde a tela de bloqueio
+                    document.getElementById('login-screen').style.display = 'none';
+                    recarregarPlayer(CANAIS_DATABASE[canalAtualKey].principal);
+                } else {
+                    feedback.innerText = "Este link premium expirou.";
+                    localStorage.removeItem('futx_token'); // Limpa cache se expirado
+                }
+            } catch (e) {
+                feedback.innerText = "Ocorreu um erro ao validar seu link de acesso.";
+            }
+        }
+
+        // SISTEMA DE RECUPERAÇÃO AUTOMÁTICA DE CANAIS
+        player.on('error', function() {
+            const canal = CANAIS_DATABASE[canalAtualKey];
+            if (!usandoBackup && canal && canal.backup) {
+                usandoBackup = true;
+                tentativasReconexao = 0;
+                recarregarPlayer(canal.backup);
+            } else if (tentativasReconexao < MAX_TENTATIVAS) {
+                tentativasReconexao++;
+                setTimeout(() => {
+                    const urlAtiva = usandoBackup ? canal.backup : canal.principal;
+                    recarregarPlayer(urlAtiva);
+                }, 3000); 
+            } else {
+                errorScreen.style.display = 'flex';
+            }
+        });
+
+        function recarregarPlayer(url) {
+            player.src({ src: url, type: 'application/x-mpegURL' });
+            player.play().catch(() => {
+                player.muted(true);
+                player.play();
             });
+        }
+
+        function changeChannel(canalKey, cardElement) {
+            errorScreen.style.display = 'none';
+            canalAtualKey = canalKey;
+            usandoBackup = false;
+            tentativasReconexao = 0;
+            recarregarPlayer(CANAIS_DATABASE[canalKey].principal);
+
+            document.querySelectorAll('.channel-card').forEach(card => card.classList.remove('active'));
             cardElement.classList.add('active');
         }
 
-        // Função para filtrar os canais pelas abas
         function filterChannels(category, btnElement) {
-            // Atualiza a classe ativa nos botões de filtro
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            btnElement.classList.add('active');
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.add('active');
 
-            // Exibe ou oculta os canais de acordo com a categoria selecionada
             document.querySelectorAll('.channel-card').forEach(card => {
                 const cardCategory = card.getAttribute('data-category');
-                
-                if (category === 'all' || cardCategory === category) {
-                    card.style.display = 'flex'; // Mostra o canal
-                } else {
-                    card.style.display = 'none'; // Esconde o canal
-                }
+                card.style.display = (category === 'all' || cardCategory === category) ? 'flex' : 'none';
             });
         }
     </script>
-
 </body>
 </html>
