@@ -280,19 +280,29 @@
             gap: 12px;
         }
 
+        /* NOVA BOLINHA BRANCA ANIMADA PREMIUM */
         .live-dot {
             width: 10px;
             height: 10px;
-            background-color: var(--cor-primaria);
+            background-color: #ffffff;
             border-radius: 50%;
             animation: pulse-dot 1.5s infinite;
-            box-shadow: 0 0 10px var(--cor-primaria);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
 
         @keyframes pulse-dot {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+            0% { 
+                transform: scale(0.9); 
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); 
+            }
+            70% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); 
+            }
+            100% { 
+                transform: scale(0.9); 
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); 
+            }
         }
 
         .now-playing-title {
@@ -473,7 +483,7 @@
                 <p id="now-playing-name" class="now-playing-name">Premiere Clubes 4K</p>
             </div>
         </div>
-        <div class="badge" style="position:static; background-color: rgba(0, 255, 136, 0.1); color: var(--cor-primaria); border-color: rgba(0, 255, 136, 0.2);">Ao vivo</div>
+        <div class="badge" style="position:static; background-color: rgba(255, 255, 255, 0.1); color: #ffffff; border-color: rgba(255, 255, 255, 0.2);">Ao vivo</div>
     </div>
 
     <!-- Filtros de Categorias (Scroll Deslizante) -->
@@ -636,7 +646,7 @@
             "prime_1": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717667.m3u8?jw=1&auto_quality=0", backup: "" },
             "prime_2": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717666.m3u8?jw=1&auto_quality=0", backup: "" },
             "prime_3": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717665.m3u8?jw=1&auto_quality=0", backup: "" },
-            "prime_4": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717664.m3u8?jw=1&auto_quality=0", backup: "" },
+            "prime_4": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717644.m3u8?jw=1&auto_quality=0", backup: "" },
             "prime_5": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7717663.m3u8?jw=1&auto_quality=0", backup: "" },
             "prime_6": { principal: "https://speed.megafilmeshd9.com/speed-3/playlist/7718146.m3u8?jw=1&auto_quality=0", backup: "" }
         };
