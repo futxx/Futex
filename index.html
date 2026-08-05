@@ -44,7 +44,7 @@
             overflow-x: hidden;
         }
 
-        /* --- LOGO PRINCIPAL --- */
+        /* --- LOGO --- */
         .logo-container {
             display: flex; align-items: center; justify-content: center;
             gap: 10px; margin-bottom: 15px; margin-top: 10px; user-select: none;
@@ -66,7 +66,7 @@
             text-shadow: 0 0 15px var(--cor-primaria-glowing); font-weight: 900;
         }
 
-        /* --- NAVEGAÇÃO PRINCIPAL --- */
+        /* --- NAV PRINCIPAL --- */
         .main-nav {
             display: flex; gap: 12px; margin-bottom: 20px;
             background: rgba(20, 20, 27, 0.8); padding: 6px;
@@ -85,7 +85,7 @@
             box-shadow: 0 0 15px var(--cor-primaria-glowing);
         }
 
-        /* --- PLAYER DE VÍDEO --- */
+        /* --- PLAYER --- */
         .player-wrapper {
             width: 100%; max-width: 900px; position: relative;
             background-color: #000; border-radius: 20px; overflow: hidden;
@@ -104,15 +104,7 @@
 
         .video-js .vjs-play-progress { background-color: var(--cor-primaria) !important; }
 
-        .player-error-msg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 12, 0.95); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 10; display: none; text-align: center; padding: 20px;
-        }
-
-        .player-error-msg p { color: #ef4444; font-size: 1.2rem; font-weight: 700; }
-
-        /* --- BARRA AGORA TOCANDO --- */
+        /* --- BARRA TOCANDO AGORA --- */
         .now-playing-container {
             width: 100%; max-width: 900px;
             background: linear-gradient(90deg, rgba(20,20,27,1) 0%, rgba(10,10,12,0.5) 100%);
@@ -128,22 +120,12 @@
             animation: pulse-dot 1.5s infinite; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
 
-        @keyframes pulse-dot {
-            0% { transform: scale(0.9); } 70% { transform: scale(1.1); } 100% { transform: scale(0.9); }
-        }
+        @keyframes pulse-dot { 0% { transform: scale(0.9); } 70% { transform: scale(1.1); } 100% { transform: scale(0.9); } }
 
         .now-playing-title { font-size: 0.8rem; color: var(--cor-texto-secundario); font-weight: 600; }
         .now-playing-name { font-size: 1.05rem; color: var(--cor-texto); font-weight: 700; }
 
-        .admin-actions { width: 100%; max-width: 900px; display: flex; justify-content: flex-end; margin-bottom: 15px; }
-        .btn-admin {
-            background-color: transparent; color: var(--cor-texto-secundario);
-            border: 1px dashed var(--borda); padding: 6px 14px; border-radius: 8px;
-            font-weight: 600; font-size: 0.75rem; cursor: pointer; opacity: 0.4; transition: all 0.2s ease;
-        }
-        .btn-admin:hover { opacity: 1; border-color: var(--cor-primaria); color: var(--cor-primaria); }
-
-        /* --- FILTROS & GRADE DE CONTEÚDOS --- */
+        /* --- FILTROS E CONTEÚDOS --- */
         .filter-container {
             display: flex; gap: 8px; margin-bottom: 15px; width: 100%; max-width: 900px;
             overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
@@ -178,7 +160,7 @@
         .channel-logo { width: 70px; height: 90px; object-fit: contain; margin-bottom: 10px; margin-top: 5px; }
         .channel-name { font-size: 0.85rem; font-weight: 700; color: var(--cor-texto); }
 
-        /* --- MODAIS DE ADMIN --- */
+        /* --- MODAIS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
@@ -203,8 +185,26 @@
 
         .delete-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .delete-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-principal); padding: 10px; border-radius: 10px; border: 1px solid var(--borda); }
-        .menu-options { display: flex; gap: 10px; margin-top: 10px; }
-        .menu-btn-choice { flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-principal); border: 1px solid var(--borda); color: var(--cor-texto); font-weight: 700; cursor: pointer; }
+        .menu-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .menu-btn-choice { padding: 14px; border-radius: 12px; background: var(--bg-principal); border: 1px solid var(--borda); color: var(--cor-texto); font-weight: 700; cursor: pointer; text-align: center; }
+
+        /* ESTILO DO CARD ONLINE NO ADMIN */
+        .online-counter-card {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .online-status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--cor-primaria);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cor-primaria);
+        }
 
         @media (max-width: 480px) {
             .channels-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -221,7 +221,7 @@
         <span class="logo-text">Fut<span>X</span></span>
     </div>
 
-    <!-- Navegação -->
+    <!-- Navegação Principais -->
     <div class="main-nav">
         <button class="main-nav-btn active" onclick="switchSection('tv', this)">📺 TV Ao Vivo</button>
         <button class="main-nav-btn" onclick="switchSection('filmes', this)">🎬 Filmes</button>
@@ -230,31 +230,22 @@
 
     <!-- Container do Player -->
     <div class="player-wrapper">
-        <div id="error-screen" class="player-error-msg">
-            <p>⚠️ Sinal Temporariamente Instável</p>
-            <span style="font-size: 0.85rem; color: var(--cor-texto-secundario);">Tentando reconectar...</span>
-        </div>
         <video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'></video>
     </div>
 
     <!-- Informações de Reprodução -->
     <div class="now-playing-container">
         <div class="now-playing-info">
-            <div class="live-dot" id="live-indicator"></div>
+            <div class="live-dot"></div>
             <div>
                 <p class="now-playing-title">ASSISTINDO AGORA</p>
                 <p id="now-playing-name" class="now-playing-name">Carregando conteúdos...</p>
             </div>
         </div>
-        <div class="badge" id="type-badge" style="position:static; background-color: rgba(255, 255, 255, 0.1); color: #fff;">Ao Vivo</div>
+        <div class="badge" style="position:static; background-color: rgba(255, 255, 255, 0.1); color: #fff;">Ao Vivo</div>
     </div>
 
-    <!-- Botão de Admin -->
-    <div class="admin-actions">
-        <button class="btn-admin" onclick="openLoginModal()">⚙️ Admin</button>
-    </div>
-
-    <!-- Filtros e Lista de Canais -->
+    <!-- Filtros Dinâmicos e Grade -->
     <div class="filter-container" id="filter-container"></div>
     <div class="channels-grid" id="channels-grid"></div>
 
@@ -270,12 +261,24 @@
         </div>
     </div>
 
+    <!-- Painel Admin Principal -->
     <div class="modal-overlay" id="admin-menu-modal">
         <div class="modal">
-            <h3>Painel Admin (Firebase)</h3>
+            <h3>Painel Admin</h3>
+            
+            <!-- Contador de Pessoas Online em Tempo Real -->
+            <div class="online-counter-card">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="online-status-dot"></div>
+                    <span style="font-size: 0.85rem; font-weight: 600; color: var(--cor-texto);">Usuários no site:</span>
+                </div>
+                <span id="online-users-count" style="font-size: 1.1rem; font-weight: 800; color: var(--cor-primaria);">1</span>
+            </div>
+
             <div class="menu-options">
-                <button class="menu-btn-choice" onclick="showAddModal()">➕ Adicionar</button>
-                <button class="menu-btn-choice" onclick="showManageModal()">🗑️ Excluir</button>
+                <button class="menu-btn-choice" onclick="showAddModal()">➕ Add Conteúdo</button>
+                <button class="menu-btn-choice" onclick="showCategoriesModal()">📁 Categorias</button>
+                <button class="menu-btn-choice" style="grid-column: span 2;" onclick="showManageModal()">🗑️ Excluir Conteúdo</button>
             </div>
             <div class="modal-buttons">
                 <button class="btn-cancel" onclick="closeModal('admin-menu-modal')">Sair</button>
@@ -283,6 +286,28 @@
         </div>
     </div>
 
+    <!-- Modal Gerenciar Categorias -->
+    <div class="modal-overlay" id="categories-modal">
+        <div class="modal">
+            <h3>Gerenciar Categorias</h3>
+            <select id="cat-type-select" onchange="renderCategoriesList()">
+                <option value="tv">📺 TV Ao Vivo</option>
+                <option value="filmes">🎬 Filmes</option>
+                <option value="series">🍿 Séries</option>
+            </select>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="new-cat-name" placeholder="Nova Categoria (ex: Prime Video)">
+                <button class="btn-save" style="white-space: nowrap;" onclick="addCategory()">Criar</button>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--cor-texto-secundario); margin-top: 5px;">Categorias Existentes:</p>
+            <div class="delete-list" id="cat-list-container"></div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="showAdminMenu()">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Conteúdo -->
     <div class="modal-overlay" id="add-modal">
         <div class="modal">
             <h3>Adicionar Conteúdo</h3>
@@ -292,21 +317,21 @@
                 <option value="series">🍿 Série</option>
             </select>
             <input type="text" id="new-name" placeholder="Título">
-            <input type="text" id="new-url" placeholder="URL (.m3u8 / .mp4)">
-            <input type="text" id="new-backup" placeholder="URL Backup (Opcional)">
-            <input type="text" id="new-logo" placeholder="URL da Capa/Logo">
+            <input type="text" id="new-url" placeholder="URL do Sinal (.m3u8 / .mp4)">
+            <input type="text" id="new-logo" placeholder="URL da Logo / Capa">
             <input type="text" id="new-badge" placeholder="Qualidade (FHD, 4K)">
             <select id="new-category"></select>
             <div class="modal-buttons">
                 <button class="btn-cancel" onclick="showAdminMenu()">Voltar</button>
-                <button class="btn-save" onclick="saveNewContent()">Salvar para Todos</button>
+                <button class="btn-save" onclick="saveNewContent()">Salvar</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal Excluir Conteúdo -->
     <div class="modal-overlay" id="manage-modal">
         <div class="modal">
-            <h3>Excluir Conteúdos</h3>
+            <h3>Excluir Conteúdo</h3>
             <select id="manage-type-select" onchange="renderDeleteList()">
                 <option value="tv">📺 TV Ao Vivo</option>
                 <option value="filmes">🎬 Filmes</option>
@@ -319,10 +344,8 @@
         </div>
     </div>
 
-    <!-- Scripts do Player -->
+    <!-- Scripts -->
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-
-    <!-- Scripts do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
@@ -338,30 +361,50 @@
             appId: "1:00000000000:web:00000000000"
         };
 
-        // Inicializa o banco do Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
         const ADMIN_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // Senha "123456"
-
-        const CATEGORIES = {
-            tv: [ { id: 'all', label: 'Todos' }, { id: 'premiere', label: 'Premiere' }, { id: 'sportv', label: 'SporTV' }, { id: 'espn', label: 'ESPN' } ],
-            filmes: [ { id: 'all', label: 'Todos' }, { id: 'acao', label: 'Ação' }, { id: 'comedia', label: 'Comédia' } ],
-            series: [ { id: 'all', label: 'Todas' }, { id: 'drama', label: 'Drama' }, { id: 'acao', label: 'Ação' } ]
-        };
 
         let currentSection = 'tv';
         let DATABASE = { tv: [], filmes: [], series: [] };
+        let CATEGORIES = { tv: {}, filmes: {}, series: {} };
         const player = videojs('live-player');
-        const errorScreen = document.getElementById('error-screen');
         let itemAtual = null;
+
+        // ATALHO SECRETO: ACESSO COM 3 DEDOS NA TELA
+        document.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 3) {
+                openLoginModal();
+            }
+        });
 
         async function sha256(str) {
             const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // SINCRONIZAÇÃO EM TEMPO REAL
+        // MONITORA E REGISTRA USUÁRIOS ONLINE
+        function trackOnlineUsers() {
+            const connectedRef = db.ref('.info/connected');
+            const myConnectionsRef = db.ref('futx_online_users');
+
+            connectedRef.on('value', (snap) => {
+                if (snap.val() === true) {
+                    const con = myConnectionsRef.push();
+                    // Quando a pessoa fecha o site/aba, o Firebase limpa o registro automaticamente
+                    con.onDisconnect().remove();
+                    con.set(true);
+                }
+            });
+
+            // Atualiza o número no Admin em tempo real
+            myConnectionsRef.on('value', (snap) => {
+                const count = snap.numChildren();
+                document.getElementById('online-users-count').innerText = count;
+            });
+        }
+
+        // LEITURA EM TEMPO REAL DO FIREBASE
         function listenToDatabase() {
             db.ref('futx_db').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -374,9 +417,25 @@
                 } else {
                     DATABASE = { tv: [], filmes: [], series: [] };
                 }
-                renderFilters();
                 renderGrid();
             });
+
+            db.ref('futx_categories').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    CATEGORIES = {
+                        tv: data.tv || {},
+                        filmes: data.filmes || {},
+                        series: data.series || {}
+                    };
+                } else {
+                    CATEGORIES = { tv: {}, filmes: {}, series: {} };
+                }
+                renderFilters();
+                updateCategoryOptions();
+            });
+
+            trackOnlineUsers();
         }
 
         function switchSection(section, btn) {
@@ -390,11 +449,19 @@
         function renderFilters() {
             const container = document.getElementById('filter-container');
             container.innerHTML = '';
-            CATEGORIES[currentSection].forEach((cat, idx) => {
+            
+            const allBtn = document.createElement('button');
+            allBtn.className = 'filter-btn active';
+            allBtn.innerText = 'Todos';
+            allBtn.onclick = () => filterContent('all', allBtn);
+            container.appendChild(allBtn);
+
+            const currentCats = CATEGORIES[currentSection] || {};
+            Object.keys(currentCats).forEach((catKey) => {
                 const button = document.createElement('button');
-                button.className = `filter-btn ${idx === 0 ? 'active' : ''}`;
-                button.innerText = cat.label;
-                button.onclick = () => filterContent(cat.id, button);
+                button.className = 'filter-btn';
+                button.innerText = currentCats[catKey].label;
+                button.onclick = () => filterContent(catKey, button);
                 container.appendChild(button);
             });
         }
@@ -429,9 +496,11 @@
         }
 
         function playItem(item, cardElement) {
-            errorScreen.style.display = 'none';
             itemAtual = item;
-            recarregarPlayer(item.principal);
+            const isM3U8 = item.principal.includes('.m3u8');
+            player.src({ src: item.principal, type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4' });
+            player.play().catch(() => { player.muted(true); player.play(); });
+
             document.getElementById('now-playing-name').innerText = item.nome;
 
             if (cardElement) {
@@ -449,13 +518,7 @@
             });
         }
 
-        function recarregarPlayer(url) {
-            const isM3U8 = url.includes('.m3u8');
-            player.src({ src: url, type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4' });
-            player.play().catch(() => { player.muted(true); player.play(); });
-        }
-
-        /* ADMIN MODAL LOGIC */
+        /* MODAIS ADMIN */
         function openLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -468,7 +531,7 @@
         }
 
         function showAdminMenu() {
-            closeModal('add-modal'); closeModal('manage-modal');
+            closeModal('add-modal'); closeModal('manage-modal'); closeModal('categories-modal');
             document.getElementById('admin-menu-modal').style.display = 'flex';
         }
 
@@ -478,24 +541,92 @@
             document.getElementById('add-modal').style.display = 'flex';
         }
 
+        function showCategoriesModal() {
+            closeModal('admin-menu-modal');
+            renderCategoriesList();
+            document.getElementById('categories-modal').style.display = 'flex';
+        }
+
         function showManageModal() {
             closeModal('admin-menu-modal');
             document.getElementById('manage-modal').style.display = 'flex';
             renderDeleteList();
         }
 
+        /* OPERAÇÕES DE CATEGORIAS NO FIREBASE */
+        function addCategory() {
+            const section = document.getElementById('cat-type-select').value;
+            const catName = document.getElementById('new-cat-name').value.trim();
+
+            if (!catName) return alert('Digite o nome da categoria.');
+
+            const catId = catName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "_");
+
+            db.ref(`futx_categories/${section}/${catId}`).set({
+                id: catId,
+                label: catName
+            }).then(() => {
+                document.getElementById('new-cat-name').value = '';
+                renderCategoriesList();
+            });
+        }
+
+        function renderCategoriesList() {
+            const section = document.getElementById('cat-type-select').value;
+            const container = document.getElementById('cat-list-container');
+            container.innerHTML = '';
+            
+            const cats = CATEGORIES[section] || {};
+            const keys = Object.keys(cats);
+
+            if (keys.length === 0) {
+                container.innerHTML = '<p style="font-size:0.8rem; color: var(--cor-texto-secundario); padding: 10px 0;">Nenhuma categoria criada.</p>';
+                return;
+            }
+
+            keys.forEach(key => {
+                const row = document.createElement('div');
+                row.className = 'delete-item';
+                row.innerHTML = `
+                    <span style="font-size: 0.9rem; font-weight: 600;">${cats[key].label}</span>
+                    <button class="btn-delete" onclick="deleteCategory('${section}', '${key}')">Excluir</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function deleteCategory(section, catId) {
+            if (confirm('Deseja excluir esta categoria? Os canais nela voltarão para sem categoria.')) {
+                db.ref(`futx_categories/${section}/${catId}`).remove().then(() => {
+                    renderCategoriesList();
+                });
+            }
+        }
+
         function updateCategoryOptions() {
             const type = document.getElementById('new-type').value;
             const selectCat = document.getElementById('new-category');
             selectCat.innerHTML = '';
-            CATEGORIES[type].filter(c => c.id !== 'all').forEach(cat => {
+
+            const currentCats = CATEGORIES[type] || {};
+            const keys = Object.keys(currentCats);
+
+            if (keys.length === 0) {
                 const opt = document.createElement('option');
-                opt.value = cat.id; opt.innerText = cat.label;
+                opt.value = 'geral'; opt.innerText = 'Geral (Sem categoria)';
+                selectCat.appendChild(opt);
+                return;
+            }
+
+            keys.forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.innerText = currentCats[key].label;
                 selectCat.appendChild(opt);
             });
         }
 
-        /* OPERAÇÕES NO FIREBASE */
+        /* SALVAR CONTEÚDO NO FIREBASE */
         function saveNewContent() {
             const type = document.getElementById('new-type').value;
             const nome = document.getElementById('new-name').value;
@@ -510,13 +641,12 @@
                 category: document.getElementById('new-category').value,
                 badge: document.getElementById('new-badge').value || 'HD',
                 logo: document.getElementById('new-logo').value || 'https://via.placeholder.com/150',
-                principal: url,
-                backup: document.getElementById('new-backup').value || ''
+                principal: url
             };
 
             db.ref(`futx_db/${type}/${id}`).set(newItem, (err) => {
                 if (!err) {
-                    alert('Adicionado com sucesso para todos os usuários!');
+                    alert('Adicionado com sucesso!');
                     closeModal('add-modal');
                 }
             });
