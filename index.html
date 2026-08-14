@@ -16,14 +16,15 @@
     <style>
         :root {
             --bg-principal: #09090b;
-            --bg-card: #14141b;
-            --bg-card-hover: #1d1d26;
+            --bg-card: #14141d;
+            --bg-card-hover: #1c1c28;
             --cor-primaria: #00ff88;
-            --cor-primaria-glowing: rgba(0, 255, 136, 0.35);
+            --cor-primaria-glowing: rgba(0, 255, 136, 0.4);
             --cor-texto: #f4f4f5;
             --cor-texto-secundario: #a1a1aa;
-            --borda: rgba(255, 255, 255, 0.06);
+            --borda: rgba(255, 255, 255, 0.08);
             --fonte: 'Plus Jakarta Sans', sans-serif;
+            --glass-bg: rgba(20, 20, 29, 0.75);
         }
 
         * {
@@ -35,6 +36,7 @@
 
         body {
             background-color: var(--bg-principal);
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
             color: var(--cor-texto);
             display: flex;
             flex-direction: column;
@@ -47,16 +49,16 @@
         /* --- LOGO --- */
         .logo-container {
             display: flex; align-items: center; justify-content: center;
-            gap: 10px; margin-bottom: 15px; margin-top: 10px; user-select: none;
+            gap: 10px; margin-bottom: 20px; margin-top: 10px; user-select: none;
         }
 
         .logo-icon {
-            width: 40px; height: 40px; fill: var(--cor-primaria);
-            filter: drop-shadow(0 0 10px var(--cor-primaria-glowing));
+            width: 38px; height: 38px; fill: var(--cor-primaria);
+            filter: drop-shadow(0 0 12px var(--cor-primaria-glowing));
         }
 
         .logo-text {
-            font-size: 2.3rem; font-weight: 800; letter-spacing: -1.5px;
+            font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;
             background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -68,148 +70,200 @@
 
         /* --- NAV PRINCIPAL --- */
         .main-nav {
-            display: flex; gap: 12px; margin-bottom: 20px;
-            background: rgba(20, 20, 27, 0.8); padding: 6px;
+            display: flex; gap: 8px; margin-bottom: 24px;
+            background: var(--glass-bg); padding: 6px;
             border-radius: 16px; border: 1px solid var(--borda);
+            backdrop-filter: blur(12px);
         }
 
         .main-nav-btn {
             background: transparent; color: var(--cor-texto-secundario);
-            border: none; padding: 10px 24px; border-radius: 12px;
-            font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.25s ease;
+            border: none; padding: 10px 22px; border-radius: 12px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease;
         }
 
         .main-nav-btn:hover { color: var(--cor-texto); }
         .main-nav-btn.active {
             background-color: var(--cor-primaria); color: #000;
-            box-shadow: 0 0 15px var(--cor-primaria-glowing);
+            box-shadow: 0 0 20px var(--cor-primaria-glowing);
         }
 
-        /* --- PLAYER --- */
-        .player-wrapper {
-            width: 100%; max-width: 900px; position: relative;
-            background-color: #000; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); border: 1px solid var(--borda);
-        }
-
-        .video-js { width: 100% !important; height: auto; aspect-ratio: 16/9; background-color: #000; }
-
-        .video-js .vjs-big-play-button {
-            background-color: rgba(20, 20, 27, 0.8) !important;
-            border: 2px solid var(--cor-primaria) !important;
-            color: var(--cor-primaria) !important; width: 70px !important; height: 70px !important;
-            border-radius: 50% !important; line-height: 66px !important;
-            margin-top: -35px !important; margin-left: -35px !important;
-        }
-
-        .video-js .vjs-play-progress { background-color: var(--cor-primaria) !important; }
-
-        /* --- BARRA TOCANDO AGORA --- */
-        .now-playing-container {
-            width: 100%; max-width: 900px;
-            background: linear-gradient(90deg, rgba(20,20,27,1) 0%, rgba(10,10,12,0.5) 100%);
-            padding: 15px 20px; border-radius: 16px; border-left: 4px solid var(--cor-primaria);
-            margin: 20px 0 15px 0; display: flex; align-items: center; justify-content: space-between;
-            border-top: 1px solid var(--borda); border-right: 1px solid var(--borda); border-bottom: 1px solid var(--borda);
-        }
-
-        .now-playing-info { display: flex; align-items: center; gap: 12px; }
-
-        .live-dot {
-            width: 10px; height: 10px; background-color: #ffffff; border-radius: 50%;
-            animation: pulse-dot 1.5s infinite; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
-        @keyframes pulse-dot { 0% { transform: scale(0.9); } 70% { transform: scale(1.1); } 100% { transform: scale(0.9); } }
-
-        .now-playing-title { font-size: 0.8rem; color: var(--cor-texto-secundario); font-weight: 600; }
-        .now-playing-name { font-size: 1.05rem; color: var(--cor-texto); font-weight: 700; }
-
-        /* --- FILTROS E CONTEÚDOS --- */
+        /* --- FILTROS E GRADE --- */
         .filter-container {
-            display: flex; gap: 8px; margin-bottom: 15px; width: 100%; max-width: 900px;
-            overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
+            display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 900px;
+            overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;
         }
         .filter-container::-webkit-scrollbar { display: none; }
         .filter-btn {
             background-color: var(--bg-card); color: var(--cor-texto-secundario);
             border: 1px solid var(--borda); padding: 8px 18px; border-radius: 12px;
-            cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap;
+            cursor: pointer; font-weight: 600; font-size: 0.85rem; white-space: nowrap; transition: all 0.25s ease;
         }
-        .filter-btn.active { border-color: var(--cor-primaria); background-color: rgba(0, 255, 136, 0.08); color: var(--cor-primaria); }
+        .filter-btn:hover { background-color: var(--bg-card-hover); color: var(--cor-texto); }
+        .filter-btn.active { border-color: var(--cor-primaria); background-color: rgba(0, 255, 136, 0.12); color: var(--cor-primaria); }
 
         .channels-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px; width: 100%; max-width: 900px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 16px; width: 100%; max-width: 900px;
         }
 
         .channel-card {
             background-color: var(--bg-card); border: 1px solid var(--borda);
-            border-radius: 18px; padding: 15px 10px; text-align: center; cursor: pointer;
+            border-radius: 16px; padding: 10px; text-align: center; cursor: pointer;
             transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; position: relative;
+            overflow: hidden;
         }
-        .channel-card:hover { transform: translateY(-5px); background-color: var(--bg-card-hover); }
-        .channel-card.active { border-color: var(--cor-primaria); box-shadow: 0 8px 25px rgba(0, 255, 136, 0.1); }
+        .channel-card:hover { transform: translateY(-6px); background-color: var(--bg-card-hover); border-color: rgba(255,255,255,0.2); }
 
         .badge {
-            position: absolute; top: 8px; right: 8px; background-color: rgba(255, 255, 255, 0.05);
-            color: var(--cor-texto-secundario); font-size: 0.6rem; font-weight: 700;
-            padding: 2px 6px; border-radius: 6px; border: 1px solid var(--borda);
+            position: absolute; top: 12px; right: 12px; background: rgba(0, 0, 0, 0.7);
+            color: var(--cor-primaria); font-size: 0.65rem; font-weight: 800;
+            padding: 3px 7px; border-radius: 6px; border: 1px solid rgba(0, 255, 136, 0.3);
+            backdrop-filter: blur(4px); z-index: 2;
         }
 
-        .channel-logo { width: 70px; height: 90px; object-fit: contain; margin-bottom: 10px; margin-top: 5px; }
-        .channel-name { font-size: 0.85rem; font-weight: 700; color: var(--cor-texto); }
+        .channel-logo-wrapper {
+            width: 100%; aspect-ratio: 2/3; border-radius: 10px; overflow: hidden;
+            background-color: #0d0d12; margin-bottom: 10px; position: relative;
+        }
 
-        /* --- MODAIS --- */
+        .channel-logo { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .channel-card:hover .channel-logo { transform: scale(1.05); }
+        .channel-name { font-size: 0.85rem; font-weight: 700; color: var(--cor-texto); line-height: 1.2; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; }
+
+        /* --- MODAL DETALHES DO FILME --- */
+        .movie-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
+            z-index: 200; backdrop-filter: blur(12px); padding: 15px;
+        }
+
+        .movie-card-modal {
+            background-color: #1e1e1e; border-radius: 18px; max-width: 520px; width: 100%;
+            overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8); border: 1px solid var(--borda);
+            position: relative;
+        }
+
+        .movie-modal-banner {
+            position: relative; height: 190px;
+            background-size: cover; background-position: center;
+        }
+
+        .movie-modal-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 10%, #1e1e1e 100%);
+        }
+
+        .close-modal-btn {
+            position: absolute; top: 12px; right: 12px; z-index: 10;
+            background: rgba(0, 0, 0, 0.6); color: #fff; border: none;
+            width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem;
+            cursor: pointer; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+        }
+
+        .movie-modal-header {
+            display: flex; gap: 16px; padding: 0 20px;
+            margin-top: -70px; position: relative; z-index: 2;
+        }
+
+        .movie-modal-poster {
+            width: 110px; aspect-ratio: 2/3; border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6); flex-shrink: 0; object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .movie-modal-info { display: flex; flex-direction: column; justify-content: flex-end; }
+        .movie-modal-title { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+        .movie-modal-year { color: #aaa; font-weight: normal; }
+
+        .rating-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background-color: #ff9800; color: #000; font-weight: 800;
+            padding: 3px 8px; border-radius: 6px; margin-top: 8px; width: fit-content; font-size: 0.85rem;
+        }
+
+        .movie-modal-body { padding: 20px; }
+        .movie-modal-meta { display: flex; flex-wrap: wrap; gap: 12px; color: #aaa; font-size: 0.85rem; margin-bottom: 20px; font-weight: 500; }
+
+        .play-red-button {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; background-color: #e50914; color: white; border: none;
+            padding: 14px; border-radius: 10px; font-weight: 800; font-size: 0.95rem;
+            cursor: pointer; transition: background 0.2s ease; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        }
+        .play-red-button:hover { background-color: #b80710; }
+
+        /* --- MODAL DO PLAYER DE VÍDEO --- */
+        .player-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); display: none; justify-content: center; align-items: center;
+            z-index: 300; backdrop-filter: blur(15px); padding: 15px;
+        }
+
+        .player-modal-container {
+            width: 100%; max-width: 900px; position: relative;
+            background-color: #000; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--borda);
+        }
+
+        .video-js { width: 100% !important; height: auto; aspect-ratio: 16/9; background-color: #000; }
+
+        .video-js .vjs-big-play-button {
+            background-color: rgba(10, 10, 15, 0.85) !important;
+            border: 2px solid var(--cor-primaria) !important;
+            color: var(--cor-primaria) !important; width: 70px !important; height: 70px !important;
+            border-radius: 50% !important; line-height: 66px !important;
+            margin-top: -35px !important; margin-left: -35px !important;
+            box-shadow: 0 0 20px var(--cor-primaria-glowing) !important;
+            backdrop-filter: blur(4px);
+        }
+
+        .video-js .vjs-play-progress { background-color: var(--cor-primaria) !important; }
+
+        /* --- MODAIS DE ADMIN --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
-            z-index: 100; backdrop-filter: blur(8px);
+            z-index: 400; backdrop-filter: blur(10px);
         }
 
         .modal {
             background-color: var(--bg-card); border: 1px solid var(--borda);
-            border-radius: 20px; padding: 25px; width: 90%; max-width: 450px;
-            display: flex; flex-direction: column; gap: 12px;
+            border-radius: 20px; padding: 25px; width: 90%; max-width: 480px;
+            display: flex; flex-direction: column; gap: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            max-height: 90vh; overflow-y: auto;
         }
 
+        .modal h3 { font-weight: 800; font-size: 1.2rem; }
         .modal input, .modal select {
             background-color: var(--bg-principal); border: 1px solid var(--borda);
-            color: var(--cor-texto); padding: 12px; border-radius: 10px; outline: none; width: 100%;
+            color: var(--cor-texto); padding: 12px; border-radius: 12px; outline: none; width: 100%;
         }
 
         .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
-        .btn-cancel { background: transparent; color: var(--cor-texto-secundario); border: 1px solid var(--borda); padding: 10px 16px; border-radius: 10px; cursor: pointer; }
-        .btn-save { background-color: var(--cor-primaria); color: #000; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        .btn-delete { background-color: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+        .btn-cancel { background: transparent; color: var(--cor-texto-secundario); border: 1px solid var(--borda); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .btn-save { background-color: var(--cor-primaria); color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .btn-edit { background-color: #3b82f6; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
+        .btn-delete { background-color: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700; }
 
-        .delete-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .delete-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-principal); padding: 10px; border-radius: 10px; border: 1px solid var(--borda); }
-        .menu-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .delete-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .delete-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-principal); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--borda); }
+        .delete-item-actions { display: flex; gap: 6px; }
+
+        .menu-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
         .menu-btn-choice { padding: 14px; border-radius: 12px; background: var(--bg-principal); border: 1px solid var(--borda); color: var(--cor-texto); font-weight: 700; cursor: pointer; text-align: center; }
 
-        /* ESTILO DO CARD ONLINE NO ADMIN */
         .online-counter-card {
-            background: rgba(0, 255, 136, 0.05);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            padding: 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2);
+            padding: 12px 16px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between;
         }
-        .online-status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--cor-primaria);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--cor-primaria);
-        }
+        .online-status-dot { width: 8px; height: 8px; background-color: var(--cor-primaria); border-radius: 50%; box-shadow: 0 0 8px var(--cor-primaria); }
 
         @media (max-width: 480px) {
             .channels-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-            .channel-logo { width: 50px; height: 70px; }
             .logo-text { font-size: 1.8rem; }
+            .main-nav-btn { padding: 8px 14px; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -221,35 +275,56 @@
         <span class="logo-text">Fut<span>X</span></span>
     </div>
 
-    <!-- Navegação Principais -->
+    <!-- Navegação Principal -->
     <div class="main-nav">
         <button class="main-nav-btn active" onclick="switchSection('tv', this)">📺 TV Ao Vivo</button>
         <button class="main-nav-btn" onclick="switchSection('filmes', this)">🎬 Filmes</button>
         <button class="main-nav-btn" onclick="switchSection('series', this)">🍿 Séries</button>
     </div>
 
-    <!-- Container do Player -->
-    <div class="player-wrapper">
-        <video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'></video>
-    </div>
-
-    <!-- Informações de Reprodução -->
-    <div class="now-playing-container">
-        <div class="now-playing-info">
-            <div class="live-dot"></div>
-            <div>
-                <p class="now-playing-title">ASSISTINDO AGORA</p>
-                <p id="now-playing-name" class="now-playing-name">Carregando conteúdos...</p>
-            </div>
-        </div>
-        <div class="badge" style="position:static; background-color: rgba(255, 255, 255, 0.1); color: #fff;">Ao Vivo</div>
-    </div>
-
     <!-- Filtros Dinâmicos e Grade -->
     <div class="filter-container" id="filter-container"></div>
     <div class="channels-grid" id="channels-grid"></div>
 
-    <!-- MODAIS DE GERENCIAMENTO -->
+
+    <!-- MODAL DETALHES DO FILME -->
+    <div class="movie-modal-overlay" id="movie-details-modal">
+        <div class="movie-card-modal">
+            <button class="close-modal-btn" onclick="closeMovieDetails()">✕</button>
+            <div class="movie-modal-banner" id="modal-banner"></div>
+            
+            <div class="movie-modal-header">
+                <img class="movie-modal-poster" id="modal-poster" src="" alt="Capa">
+                <div class="movie-modal-info">
+                    <h2 class="movie-modal-title" id="modal-title">Título <span class="movie-modal-year" id="modal-year">(2024)</span></h2>
+                    <div class="rating-badge" id="modal-rating">⭐ 7.4</div>
+                </div>
+            </div>
+
+            <div class="movie-modal-body">
+                <div class="movie-modal-meta">
+                    <span id="modal-duration">⏱ 01:49:00</span>
+                    <span id="modal-genres">🎭 Animação, Ação</span>
+                </div>
+
+                <button class="play-red-button" id="modal-play-btn">
+                    ► Assistir Filme
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL DO PLAYER DE VÍDEO -->
+    <div class="player-modal-overlay" id="player-modal">
+        <div class="player-modal-container">
+            <button class="close-modal-btn" onclick="closePlayerModal()">✕</button>
+            <video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'></video>
+        </div>
+    </div>
+
+
+    <!-- MODAIS DE ADMIN -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal">
             <h3>Área Restrita</h3>
@@ -265,8 +340,6 @@
     <div class="modal-overlay" id="admin-menu-modal">
         <div class="modal">
             <h3>Painel Admin</h3>
-            
-            <!-- Contador de Pessoas Online em Tempo Real -->
             <div class="online-counter-card">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="online-status-dot"></div>
@@ -278,7 +351,7 @@
             <div class="menu-options">
                 <button class="menu-btn-choice" onclick="showAddModal()">➕ Add Conteúdo</button>
                 <button class="menu-btn-choice" onclick="showCategoriesModal()">📁 Categorias</button>
-                <button class="menu-btn-choice" style="grid-column: span 2;" onclick="showManageModal()">🗑️ Excluir Conteúdo</button>
+                <button class="menu-btn-choice" style="grid-column: span 2;" onclick="showManageModal()">⚙️ Gerenciar / Editar</button>
             </div>
             <div class="modal-buttons">
                 <button class="btn-cancel" onclick="closeModal('admin-menu-modal')">Sair</button>
@@ -296,7 +369,7 @@
                 <option value="series">🍿 Séries</option>
             </select>
             <div style="display: flex; gap: 8px;">
-                <input type="text" id="new-cat-name" placeholder="Nova Categoria (ex: Prime Video)">
+                <input type="text" id="new-cat-name" placeholder="Nova Categoria">
                 <button class="btn-save" style="white-space: nowrap;" onclick="addCategory()">Criar</button>
             </div>
             <p style="font-size: 0.75rem; color: var(--cor-texto-secundario); margin-top: 5px;">Categorias Existentes:</p>
@@ -318,8 +391,12 @@
             </select>
             <input type="text" id="new-name" placeholder="Título">
             <input type="text" id="new-url" placeholder="URL do Sinal (.m3u8 / .mp4)">
-            <input type="text" id="new-logo" placeholder="URL da Logo / Capa">
-            <input type="text" id="new-badge" placeholder="Qualidade (FHD, 4K)">
+            <input type="text" id="new-logo" placeholder="URL da Capa / Poster">
+            <input type="text" id="new-banner" placeholder="URL do Banner de Fundo (Opção)">
+            <input type="text" id="new-year" placeholder="Ano (ex: 2024)">
+            <input type="text" id="new-rating" placeholder="Nota (ex: 7.4)">
+            <input type="text" id="new-duration" placeholder="Duração (ex: 01:49:00)">
+            <input type="text" id="new-genres" placeholder="Gêneros (ex: Animação, Ação)">
             <select id="new-category"></select>
             <div class="modal-buttons">
                 <button class="btn-cancel" onclick="showAdminMenu()">Voltar</button>
@@ -328,10 +405,32 @@
         </div>
     </div>
 
-    <!-- Modal Excluir Conteúdo -->
+    <!-- Modal Editar Conteúdo -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <h3>Editar Conteúdo</h3>
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-type">
+            <input type="text" id="edit-name" placeholder="Título">
+            <input type="text" id="edit-url" placeholder="URL do Sinal (.m3u8 / .mp4)">
+            <input type="text" id="edit-logo" placeholder="URL da Capa / Poster">
+            <input type="text" id="edit-banner" placeholder="URL do Banner de Fundo">
+            <input type="text" id="edit-year" placeholder="Ano (ex: 2024)">
+            <input type="text" id="edit-rating" placeholder="Nota (ex: 7.4)">
+            <input type="text" id="edit-duration" placeholder="Duração (ex: 01:49:00)">
+            <input type="text" id="edit-genres" placeholder="Gêneros (ex: Animação, Ação)">
+            <select id="edit-category"></select>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="showManageModal()">Cancelar</button>
+                <button class="btn-save" onclick="saveEditedContent()">Atualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar / Excluir Conteúdo -->
     <div class="modal-overlay" id="manage-modal">
         <div class="modal">
-            <h3>Excluir Conteúdo</h3>
+            <h3>Gerenciar Conteúdo</h3>
             <select id="manage-type-select" onchange="renderDeleteList()">
                 <option value="tv">📺 TV Ao Vivo</option>
                 <option value="filmes">🎬 Filmes</option>
@@ -350,7 +449,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAUyeUNauXfhS1SEkIIuGuwdyw3HxABefA",
             authDomain: "futx-37622.firebaseapp.com",
@@ -363,19 +461,15 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const ADMIN_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // Senha "123456"
+        const ADMIN_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
 
         let currentSection = 'tv';
         let DATABASE = { tv: [], filmes: [], series: [] };
         let CATEGORIES = { tv: {}, filmes: {}, series: {} };
         const player = videojs('live-player');
-        let itemAtual = null;
 
-        // ATALHO SECRETO: ACESSO COM 3 DEDOS NA TELA
         document.addEventListener('touchstart', (event) => {
-            if (event.touches.length === 3) {
-                openLoginModal();
-            }
+            if (event.touches.length === 3) { openLoginModal(); }
         });
 
         async function sha256(str) {
@@ -383,7 +477,6 @@
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // MONITORA E REGISTRA USUÁRIOS ONLINE
         function trackOnlineUsers() {
             const connectedRef = db.ref('.info/connected');
             const myConnectionsRef = db.ref('futx_online_users');
@@ -391,20 +484,17 @@
             connectedRef.on('value', (snap) => {
                 if (snap.val() === true) {
                     const con = myConnectionsRef.push();
-                    // Quando a pessoa fecha o site/aba, o Firebase limpa o registro automaticamente
                     con.onDisconnect().remove();
                     con.set(true);
                 }
             });
 
-            // Atualiza o número no Admin em tempo real
             myConnectionsRef.on('value', (snap) => {
                 const count = snap.numChildren();
                 document.getElementById('online-users-count').innerText = count;
             });
         }
 
-        // LEITURA EM TEMPO REAL DO FIREBASE
         function listenToDatabase() {
             db.ref('futx_db').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -418,6 +508,9 @@
                     DATABASE = { tv: [], filmes: [], series: [] };
                 }
                 renderGrid();
+                if (document.getElementById('manage-modal').style.display === 'flex') {
+                    renderDeleteList();
+                }
             });
 
             db.ref('futx_categories').on('value', (snapshot) => {
@@ -472,41 +565,63 @@
             const list = DATABASE[currentSection] || [];
 
             if (list.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--cor-texto-secundario);">Nenhum conteúdo disponível.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--cor-texto-secundario); padding: 30px 0;">Nenhum conteúdo disponível nesta categoria.</p>';
                 return;
             }
 
-            list.forEach((item, index) => {
+            list.forEach((item) => {
                 const card = document.createElement('div');
-                card.className = `channel-card ${index === 0 ? 'active' : ''}`;
+                card.className = 'channel-card';
                 card.setAttribute('data-category', item.category);
-                card.onclick = () => playItem(item, card);
+                
+                card.onclick = () => openMovieDetails(item);
 
                 card.innerHTML = `
-                    <span class="badge">${item.badge || 'HD'}</span>
-                    <img class="channel-logo" src="${item.logo || 'https://via.placeholder.com/150'}" alt="${item.nome}">
+                    <span class="badge">${item.rating ? '⭐ ' + item.rating : (item.badge || 'HD')}</span>
+                    <div class="channel-logo-wrapper">
+                        <img class="channel-logo" src="${item.logo || 'https://via.placeholder.com/150x225'}" alt="${item.nome}" loading="lazy">
+                    </div>
                     <div class="channel-name">${item.nome}</div>
                 `;
                 grid.appendChild(card);
             });
-
-            if (list.length > 0 && !itemAtual) {
-                playItem(list[0], grid.children[0]);
-            }
         }
 
-        function playItem(item, cardElement) {
-            itemAtual = item;
+        /* MODAL DETALHES DO FILME */
+        function openMovieDetails(item) {
+            document.getElementById('modal-banner').style.backgroundImage = `url('${item.banner || item.logo}')`;
+            document.getElementById('modal-poster').src = item.logo || 'https://via.placeholder.com/150x225';
+            document.getElementById('modal-title').childNodes[0].nodeValue = item.nome + " ";
+            document.getElementById('modal-year').innerText = item.year ? `(${item.year})` : '';
+            document.getElementById('modal-rating').innerText = `⭐ ${item.rating || '7.0'}`;
+            document.getElementById('modal-duration').innerText = `⏱ ${item.duration || '01:45:00'}`;
+            document.getElementById('modal-genres').innerText = `🎭 ${item.genres || 'Filme'}`;
+
+            const playBtn = document.getElementById('modal-play-btn');
+            playBtn.onclick = () => {
+                closeMovieDetails();
+                openPlayerModal(item);
+            };
+
+            document.getElementById('movie-details-modal').style.display = 'flex';
+        }
+
+        function closeMovieDetails() {
+            document.getElementById('movie-details-modal').style.display = 'none';
+        }
+
+        /* MODAL DO PLAYER DE VÍDEO */
+        function openPlayerModal(item) {
             const isM3U8 = item.principal.includes('.m3u8');
             player.src({ src: item.principal, type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4' });
+            
+            document.getElementById('player-modal').style.display = 'flex';
             player.play().catch(() => { player.muted(true); player.play(); });
+        }
 
-            document.getElementById('now-playing-name').innerText = item.nome;
-
-            if (cardElement) {
-                document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('active'));
-                cardElement.classList.add('active');
-            }
+        function closePlayerModal() {
+            player.pause();
+            document.getElementById('player-modal').style.display = 'none';
         }
 
         function filterContent(category, btnElement) {
@@ -531,7 +646,7 @@
         }
 
         function showAdminMenu() {
-            closeModal('add-modal'); closeModal('manage-modal'); closeModal('categories-modal');
+            closeModal('add-modal'); closeModal('edit-modal'); closeModal('manage-modal'); closeModal('categories-modal');
             document.getElementById('admin-menu-modal').style.display = 'flex';
         }
 
@@ -548,12 +663,11 @@
         }
 
         function showManageModal() {
-            closeModal('admin-menu-modal');
+            closeModal('admin-menu-modal'); closeModal('edit-modal');
             document.getElementById('manage-modal').style.display = 'flex';
             renderDeleteList();
         }
 
-        /* OPERAÇÕES DE CATEGORIAS NO FIREBASE */
         function addCategory() {
             const section = document.getElementById('cat-type-select').value;
             const catName = document.getElementById('new-cat-name').value.trim();
@@ -596,16 +710,16 @@
         }
 
         function deleteCategory(section, catId) {
-            if (confirm('Deseja excluir esta categoria? Os canais nela voltarão para sem categoria.')) {
+            if (confirm('Deseja excluir esta categoria?')) {
                 db.ref(`futx_categories/${section}/${catId}`).remove().then(() => {
                     renderCategoriesList();
                 });
             }
         }
 
-        function updateCategoryOptions() {
-            const type = document.getElementById('new-type').value;
-            const selectCat = document.getElementById('new-category');
+        function updateCategoryOptions(targetSelectId = 'new-category', targetTypeSelectId = 'new-type') {
+            const type = document.getElementById(targetTypeSelectId).value;
+            const selectCat = document.getElementById(targetSelectId);
             selectCat.innerHTML = '';
 
             const currentCats = CATEGORIES[type] || {};
@@ -626,46 +740,142 @@
             });
         }
 
-        /* SALVAR CONTEÚDO NO FIREBASE */
+        /* SALVAR NOVO CONTEÚDO */
         function saveNewContent() {
             const type = document.getElementById('new-type').value;
-            const nome = document.getElementById('new-name').value;
-            const url = document.getElementById('new-url').value;
+            const nome = document.getElementById('new-name').value.trim();
+            const url = document.getElementById('new-url').value.trim();
 
-            if (!nome || !url) return alert('Preencha Nome e URL.');
+            if (!nome || !url) return alert('Preencha Nome e URL do vídeo.');
 
             const id = 'item_' + Date.now();
             const newItem = {
                 id: id,
                 nome: nome,
                 category: document.getElementById('new-category').value,
-                badge: document.getElementById('new-badge').value || 'HD',
-                logo: document.getElementById('new-logo').value || 'https://via.placeholder.com/150',
+                logo: document.getElementById('new-logo').value.trim() || 'https://via.placeholder.com/150x225',
+                banner: document.getElementById('new-banner').value.trim() || '',
+                year: document.getElementById('new-year').value.trim() || '',
+                rating: document.getElementById('new-rating').value.trim() || '7.0',
+                duration: document.getElementById('new-duration').value.trim() || '',
+                genres: document.getElementById('new-genres').value.trim() || '',
                 principal: url
             };
 
             db.ref(`futx_db/${type}/${id}`).set(newItem, (err) => {
                 if (!err) {
-                    alert('Adicionado com sucesso!');
-                    closeModal('add-modal');
+                    alert(`"${nome}" adicionado com sucesso!`);
+                    
+                    document.getElementById('new-name').value = '';
+                    document.getElementById('new-url').value = '';
+                    document.getElementById('new-logo').value = '';
+                    document.getElementById('new-banner').value = '';
+                    document.getElementById('new-year').value = '';
+                    document.getElementById('new-rating').value = '';
+                    document.getElementById('new-duration').value = '';
+                    document.getElementById('new-genres').value = '';
+                    
+                    document.getElementById('new-name').focus();
+                } else {
+                    alert('Erro ao salvar no banco de dados.');
                 }
             });
         }
 
+        /* GERENCIAR E EDITAR */
         function renderDeleteList() {
             const type = document.getElementById('manage-type-select').value;
             const container = document.getElementById('delete-list-container');
             container.innerHTML = '';
             const list = DATABASE[type] || [];
 
+            if (list.length === 0) {
+                container.innerHTML = '<p style="font-size:0.8rem; color: var(--cor-texto-secundario); padding: 10px 0;">Nenhum conteúdo encontrado.</p>';
+                return;
+            }
+
             list.forEach((item) => {
                 const row = document.createElement('div');
                 row.className = 'delete-item';
                 row.innerHTML = `
                     <span style="font-size: 0.9rem; font-weight: 600;">${item.nome}</span>
-                    <button class="btn-delete" onclick="deleteItem('${type}', '${item.id}')">Excluir</button>
+                    <div class="delete-item-actions">
+                        <button class="btn-edit" onclick="openEditModal('${type}', '${item.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="deleteItem('${type}', '${item.id}')">Excluir</button>
+                    </div>
                 `;
                 container.appendChild(row);
+            });
+        }
+
+        function openEditModal(type, id) {
+            const list = DATABASE[type] || [];
+            const item = list.find(i => i.id === id);
+            if (!item) return;
+
+            closeModal('manage-modal');
+
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('edit-type').value = type;
+            document.getElementById('edit-name').value = item.nome || '';
+            document.getElementById('edit-url').value = item.principal || '';
+            document.getElementById('edit-logo').value = item.logo || '';
+            document.getElementById('edit-banner').value = item.banner || '';
+            document.getElementById('edit-year').value = item.year || '';
+            document.getElementById('edit-rating').value = item.rating || '';
+            document.getElementById('edit-duration').value = item.duration || '';
+            document.getElementById('edit-genres').value = item.genres || '';
+
+            const selectCat = document.getElementById('edit-category');
+            selectCat.innerHTML = '';
+            const currentCats = CATEGORIES[type] || {};
+            const keys = Object.keys(currentCats);
+
+            if (keys.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = 'geral'; opt.innerText = 'Geral';
+                selectCat.appendChild(opt);
+            } else {
+                keys.forEach(key => {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.innerText = currentCats[key].label;
+                    if (key === item.category) opt.selected = true;
+                    selectCat.appendChild(opt);
+                });
+            }
+
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function saveEditedContent() {
+            const id = document.getElementById('edit-id').value;
+            const type = document.getElementById('edit-type').value;
+            const nome = document.getElementById('edit-name').value.trim();
+            const url = document.getElementById('edit-url').value.trim();
+
+            if (!nome || !url) return alert('Preencha Nome e URL do vídeo.');
+
+            const updatedItem = {
+                id: id,
+                nome: nome,
+                category: document.getElementById('edit-category').value,
+                logo: document.getElementById('edit-logo').value.trim() || 'https://via.placeholder.com/150x225',
+                banner: document.getElementById('edit-banner').value.trim() || '',
+                year: document.getElementById('edit-year').value.trim() || '',
+                rating: document.getElementById('edit-rating').value.trim() || '7.0',
+                duration: document.getElementById('edit-duration').value.trim() || '',
+                genres: document.getElementById('edit-genres').value.trim() || '',
+                principal: url
+            };
+
+            db.ref(`futx_db/${type}/${id}`).set(updatedItem, (err) => {
+                if (!err) {
+                    alert('Conteúdo atualizado com sucesso!');
+                    showManageModal();
+                } else {
+                    alert('Erro ao atualizar.');
+                }
             });
         }
 
