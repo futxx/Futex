@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- 👇 TAG DE VERIFICAÇÃO DA MONETAG ADICIONADA AQUI 👇 -->
+    <!-- Meta Tag de Verificação Monetag -->
     <meta name="monetag" content="8aaa4cf1e24492aca800b53f1809cee6">
     
     <title>FutX - TV, Filmes e Séries</title>
@@ -713,7 +713,7 @@
             selectCat.innerHTML = '';
 
             const currentCats = CATEGORIES[type] || {};
-            const keys = Object.keys(keys);
+            const keys = Object.keys(currentCats);
 
             if (keys.length === 0) {
                 const opt = document.createElement('option');
