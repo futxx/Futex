@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FutX - TV, Filmes e Séries</title>
    
+    <!-- TAG DE VERIFICAÇÃO / ANÚNCIO DA MONETAG -->
+    <script src="https://3nbf4.com/act/files/tag.min.js" data-zone="11579308" data-cfasync="false" async></script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -887,7 +890,20 @@
             }
         }
 
-        window.onload = listenToDatabase;
+        window.onload = function() {
+            listenToDatabase();
+
+            /* REGISTRO DO SERVICE WORKER DA MONETAG */
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker Monetag registrado com sucesso:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.error('Falha ao registrar Service Worker Monetag:', error);
+                    });
+            }
+        };
     </script>
 </body>
 </html>
