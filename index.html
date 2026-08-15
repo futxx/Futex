@@ -68,6 +68,83 @@
             text-shadow: 0 0 15px var(--cor-primaria-glowing); font-weight: 900;
         }
 
+        /* CARD DE RECOMPENSA DE TEMPO */
+        .time-reward-card {
+            background: var(--bg-card);
+            border: 1px solid var(--cor-primaria);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px var(--cor-primaria-glowing);
+            backdrop-filter: blur(12px);
+        }
+
+        .time-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .time-label {
+            font-size: 0.75rem;
+            color: var(--cor-texto-secundario);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .time-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--cor-primaria);
+            font-family: monospace;
+        }
+
+        .time-buttons-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-add-time {
+            background-color: var(--cor-primaria);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 0 10px var(--cor-primaria-glowing);
+        }
+
+        .btn-add-time:hover {
+            transform: scale(1.03);
+            background-color: #00cc6a;
+        }
+
+        .btn-reset-time {
+            background-color: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn-reset-time:hover {
+            transform: scale(1.03);
+            background-color: #dc2626;
+        }
+
         .main-nav {
             display: flex; gap: 8px; margin-bottom: 24px;
             background: var(--glass-bg); padding: 6px;
@@ -259,6 +336,9 @@
             .channels-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
             .logo-text { font-size: 1.8rem; }
             .main-nav-btn { padding: 8px 14px; font-size: 0.85rem; }
+            .time-reward-card { flex-direction: column; gap: 10px; text-align: center; }
+            .time-buttons-group { width: 100%; justify-content: center; }
+            .btn-add-time { flex: 1; }
         }
     </style>
 </head>
@@ -268,6 +348,22 @@
     <div class="logo-container">
         <svg class="logo-icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C13.1,4 14.15,4.28 15.1,4.77L13.84,8.64L9.42,8.12L8.24,4.55C9.4,4.2,10.67,4 12,4M6.21,6C6.73,6.5 7.15,7.12 7.42,7.81L8.33,10.59L5.05,12.72L3.1,10.03C3.78,8.4 4.87,7 6.21,6M17.79,6C19.13,7 20.22,8.4 20.9,10.03L18.95,12.72L15.67,10.59L16.58,7.81C16.85,7.12 17.27,6.5 17.79,6M12,10.74L14.73,12.5L13.68,15.71H10.32L9.27,12.5L12,10.74M4.7,14.06L7.81,12.04L8.86,15.25L6.64,18.3C5.55,17.2 4.84,15.71 4.7,14.06M19.3,14.06C19.16,15.71 18.45,17.2 17.36,18.3L15.14,15.25L16.19,12.04L19.3,14.06M12,18C11.1,18 10.22,17.86 9.4,17.6L10.65,19.43C11.1,19.47 11.55,19.5 12,19.5C12.45,19.5 12.9,19.47 13.35,19.43L14.6,17.6C13.78,17.86 12.9,18 12,18Z"/></svg>
         <span class="logo-text">Fut<span>X</span></span>
+    </div>
+
+    <!-- CARD DE TEMPO RECOMPENSADO -->
+    <div class="time-reward-card">
+        <div class="time-info">
+            <span class="time-label">⏱ TEMPO RESTANTE:</span>
+            <span id="user-remaining-time" class="time-value">00h 00m 00s</span>
+        </div>
+        <div class="time-buttons-group">
+            <button class="btn-add-time" onclick="watchAdToGainTime()">
+                ⚡ GANHAR + TEMPO (+2h)
+            </button>
+            <button class="btn-reset-time" onclick="resetTime()" title="Zerar tempo acumulado">
+                ❌ ZERAR
+            </button>
+        </div>
     </div>
 
     <!-- Navegação Principal -->
@@ -436,6 +532,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <script>
+        // CONFIGURAÇÕES DO SMARTLINK ADSTERRA E TEMPO
+        const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+        const MAX_TIME_MS = 22 * 60 * 60 * 1000;
+        const ADSTERRA_DIRECT_LINK = "Https://www.effectivecpmnetwork.com/n4kwyysv3e?key=522586ad942112255a100d895c15e6ea";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAUyeUNauXfhS1SEkIIuGuwdyw3HxABefA",
             authDomain: "futx-37622.firebaseapp.com",
@@ -454,6 +555,76 @@
         let DATABASE = { tv: [], filmes: [], series: [] };
         let CATEGORIES = { tv: {}, filmes: {}, series: {} };
         const player = videojs('live-player');
+
+        // LÓGICA DE CONTROLE DE TEMPO LOCALSTORAGE
+        function getStoredTime() {
+            const expireTime = localStorage.getItem('futx_access_expire_time');
+            return expireTime ? parseInt(expireTime, 10) : Date.now();
+        }
+
+        function updateCountdownDisplay() {
+            const expireTime = getStoredTime();
+            const now = Date.now();
+            const diff = expireTime - now;
+
+            const displayElement = document.getElementById('user-remaining-time');
+            if (!displayElement) return;
+
+            if (diff <= 0) {
+                displayElement.innerText = "00h 00m 00s (Expirado)";
+                displayElement.style.color = "#ef4444";
+                return;
+            }
+
+            displayElement.style.color = "var(--cor-primaria)";
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            displayElement.innerText = 
+                `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+        }
+
+        setInterval(updateCountdownDisplay, 1000);
+
+        // FUNÇÃO PARA ZERAR O TEMPO
+        function resetTime() {
+            if (confirm("Tem certeza que deseja zerar seu tempo acumulado?")) {
+                localStorage.removeItem('futx_access_expire_time');
+                localStorage.removeItem('futx_pending_reward');
+                updateCountdownDisplay();
+            }
+        }
+
+        // ABRE O ANÚNCIO PRIMEIRO E MARCA A PENDÊNCIA DE CRÉDITO
+        function watchAdToGainTime() {
+            localStorage.setItem('futx_pending_reward', 'true');
+            window.open(ADSTERRA_DIRECT_LINK, '_blank');
+        }
+
+        // DETECTA O RETORNO DO USUÁRIO PARA A PÁGINA PARA CREDITAR AS 2 HORAS
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && localStorage.getItem('futx_pending_reward') === 'true') {
+                localStorage.removeItem('futx_pending_reward');
+
+                const currentExpire = getStoredTime();
+                const now = Date.now();
+
+                let baseTime = currentExpire > now ? currentExpire : now;
+                let newExpire = baseTime + TWO_HOURS_MS;
+
+                if (newExpire - now > MAX_TIME_MS) {
+                    newExpire = now + MAX_TIME_MS;
+                    alert("Você atingiu o limite máximo de 22 horas acumuladas!");
+                } else {
+                    alert("Obrigado por assistir! +2 horas foram adicionadas com sucesso.");
+                }
+
+                localStorage.setItem('futx_access_expire_time', newExpire);
+                updateCountdownDisplay();
+            }
+        });
 
         document.addEventListener('touchstart', (event) => {
             if (event.touches.length === 3) { openLoginModal(); }
@@ -597,6 +768,13 @@
         }
 
         function openPlayerModal(item) {
+            const expireTime = getStoredTime();
+
+            if (Date.now() >= expireTime) {
+                alert("Seu tempo acabou! Clique em 'GANHAR + TEMPO' para abrir o anúncio e liberar mais 2 horas.");
+                return;
+            }
+
             const isM3U8 = item.principal.includes('.m3u8');
             player.src({ src: item.principal, type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4' });
             
@@ -871,6 +1049,7 @@
 
         window.onload = function() {
             listenToDatabase();
+            updateCountdownDisplay();
         };
     </script>
 
