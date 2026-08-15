@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FutX - TV, Filmes e Séries</title>
-
-    <!-- VERIFICAÇÃO POR META TAG MONETAG -->
+    
+    <!-- 👇 TAG DE VERIFICAÇÃO DA MONETAG ADICIONADA AQUI 👇 -->
     <meta name="monetag" content="8aaa4cf1e24492aca800b53f1809cee6">
-
-    <!-- TAG DE ANÚNCIO MONETAG -->
-    <script src="https://3nbf4.com/act/files/tag.min.js" data-zone="11579308" data-cfasync="false" async></script>
+    
+    <title>FutX - TV, Filmes e Séries</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,7 +50,6 @@
             overflow-x: hidden;
         }
 
-        /* --- LOGO --- */
         .logo-container {
             display: flex; align-items: center; justify-content: center;
             gap: 10px; margin-bottom: 20px; margin-top: 10px; user-select: none;
@@ -74,7 +71,6 @@
             text-shadow: 0 0 15px var(--cor-primaria-glowing); font-weight: 900;
         }
 
-        /* --- NAV PRINCIPAL --- */
         .main-nav {
             display: flex; gap: 8px; margin-bottom: 24px;
             background: var(--glass-bg); padding: 6px;
@@ -94,7 +90,6 @@
             box-shadow: 0 0 20px var(--cor-primaria-glowing);
         }
 
-        /* --- FILTROS E GRADE --- */
         .filter-container {
             display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 900px;
             overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;
@@ -137,7 +132,6 @@
         .channel-card:hover .channel-logo { transform: scale(1.05); }
         .channel-name { font-size: 0.85rem; font-weight: 700; color: var(--cor-texto); line-height: 1.2; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; }
 
-        /* --- MODAL DETALHES DO FILME --- */
         .movie-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
@@ -199,7 +193,6 @@
         }
         .play-red-button:hover { background-color: #b80710; }
 
-        /* --- MODAL DO PLAYER DE VÍDEO --- */
         .player-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.95); display: none; justify-content: center; align-items: center;
@@ -227,7 +220,6 @@
 
         .video-js .vjs-play-progress { background-color: var(--cor-primaria) !important; }
 
-        /* --- MODAIS DE ADMIN --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
@@ -292,7 +284,6 @@
     <div class="filter-container" id="filter-container"></div>
     <div class="channels-grid" id="channels-grid"></div>
 
-
     <!-- MODAL DETALHES DO FILME -->
     <div class="movie-modal-overlay" id="movie-details-modal">
         <div class="movie-card-modal">
@@ -320,7 +311,6 @@
         </div>
     </div>
 
-
     <!-- MODAL DO PLAYER DE VÍDEO -->
     <div class="player-modal-overlay" id="player-modal">
         <div class="player-modal-container">
@@ -328,7 +318,6 @@
             <video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{}'></video>
         </div>
     </div>
-
 
     <!-- MODAIS DE ADMIN -->
     <div class="modal-overlay" id="login-modal">
@@ -342,7 +331,6 @@
         </div>
     </div>
 
-    <!-- Painel Admin Principal -->
     <div class="modal-overlay" id="admin-menu-modal">
         <div class="modal">
             <h3>Painel Admin</h3>
@@ -365,7 +353,6 @@
         </div>
     </div>
 
-    <!-- Modal Gerenciar Categorias -->
     <div class="modal-overlay" id="categories-modal">
         <div class="modal">
             <h3>Gerenciar Categorias</h3>
@@ -386,7 +373,6 @@
         </div>
     </div>
 
-    <!-- Modal Adicionar Conteúdo -->
     <div class="modal-overlay" id="add-modal">
         <div class="modal">
             <h3>Adicionar Conteúdo</h3>
@@ -411,7 +397,6 @@
         </div>
     </div>
 
-    <!-- Modal Editar Conteúdo -->
     <div class="modal-overlay" id="edit-modal">
         <div class="modal">
             <h3>Editar Conteúdo</h3>
@@ -433,7 +418,6 @@
         </div>
     </div>
 
-    <!-- Modal Gerenciar / Excluir Conteúdo -->
     <div class="modal-overlay" id="manage-modal">
         <div class="modal">
             <h3>Gerenciar Conteúdo</h3>
@@ -449,10 +433,13 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts do App -->
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <!-- Script de Anúncios Monetag -->
+    <script src="https://3nbf4.com/act/files/tag.min.js" data-zone="11579308" data-cfasync="false" async></script>
 
     <script>
         const firebaseConfig = {
@@ -593,7 +580,6 @@
             });
         }
 
-        /* MODAL DETALHES DO FILME */
         function openMovieDetails(item) {
             document.getElementById('modal-banner').style.backgroundImage = `url('${item.banner || item.logo}')`;
             document.getElementById('modal-poster').src = item.logo || 'https://via.placeholder.com/150x225';
@@ -616,7 +602,6 @@
             document.getElementById('movie-details-modal').style.display = 'none';
         }
 
-        /* MODAL DO PLAYER DE VÍDEO */
         function openPlayerModal(item) {
             const isM3U8 = item.principal.includes('.m3u8');
             player.src({ src: item.principal, type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4' });
@@ -639,7 +624,6 @@
             });
         }
 
-        /* MODAIS ADMIN */
         function openLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -729,7 +713,7 @@
             selectCat.innerHTML = '';
 
             const currentCats = CATEGORIES[type] || {};
-            const keys = Object.keys(currentCats);
+            const keys = Object.keys(keys);
 
             if (keys.length === 0) {
                 const opt = document.createElement('option');
@@ -746,7 +730,6 @@
             });
         }
 
-        /* SALVAR NOVO CONTEÚDO */
         function saveNewContent() {
             const type = document.getElementById('new-type').value;
             const nome = document.getElementById('new-name').value.trim();
@@ -788,7 +771,6 @@
             });
         }
 
-        /* GERENCIAR E EDITAR */
         function renderDeleteList() {
             const type = document.getElementById('manage-type-select').value;
             const container = document.getElementById('delete-list-container');
