@@ -556,6 +556,12 @@
         let CATEGORIES = { tv: {}, filmes: {}, series: {} };
         const player = videojs('live-player');
 
+        // FUNÇÃO QUE ZERA O TEMPO AUTOMATICAMENTE AO SAIR DA PÁGINA
+        window.addEventListener('beforeunload', () => {
+            // Remove o tempo acumulado para que precise assistir ao vídeo de novo ao voltar
+            localStorage.removeItem('futx_access_expire_time');
+        });
+
         // LÓGICA DE CONTROLE DE TEMPO LOCALSTORAGE
         function getStoredTime() {
             const expireTime = localStorage.getItem('futx_access_expire_time');
@@ -588,7 +594,7 @@
 
         setInterval(updateCountdownDisplay, 1000);
 
-        // FUNÇÃO PARA ZERAR O TEMPO
+        // FUNÇÃO MANUAL PARA ZERAR O TEMPO
         function resetTime() {
             if (confirm("Tem certeza que deseja zerar seu tempo acumulado?")) {
                 localStorage.removeItem('futx_access_expire_time');
