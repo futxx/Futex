@@ -639,7 +639,35 @@ function toggleList(id) {
   toast(state.list.has(id) ? BY[id].title + ' foi para a sua lista' : BY[id].title + ' saiu da sua lista');
   if (state.view === 'lista' && state.listTab === 'lista') render();
 }
-$('#pn').innerHTML = `<p class="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-widest text-mute">Notificações</p>` + NOTIFS.map(n => `<div class="rounded-lg px-3 py-2.5 hover:bg-white/5"><p class="text-sm font-bold">${n[0]}</p><p class="text-sm text-mute">${n[1]}</p></div>`).join('');
+/* Notificações reais: são criadas a partir dos conteúdos adicionados ao catálogo. */
+const NOTIF_SEEN_KEY = 'vela-notif-seen-v1';
+function getCatalogNotifications() {
+  const items = [
+    ...DATA.filter(x => x.added).map(x => ({
+      time: Number(x.added) || 0,
+      title: x.type === 'f' ? 'Novo filme' : 'Nova série',
+      message: `${x.title} foi adicionado ao catálogo.`
+    })),
+    ...CH.filter(x => x.added).map(x => ({
+      time: Number(x.added) || 0,
+      title: 'Novo canal ao vivo',
+      message: `${x.name} foi adicionado aos canais.`
+    }))
+  ];
+  return items.sort((a, b) => b.time - a.time).slice(0, 10);
+}
+function renderNotifPanel() {
+  const items = getCatalogNotifications();
+  const latest = items.reduce((m, x) => Math.max(m, x.time), 0);
+  const seen = Number(store.get(NOTIF_SEEN_KEY, 0)) || 0;
+  $('#dot').hidden = !latest || latest <= seen;
+  $('#pn').innerHTML =
+    `<p class="px-3 pb-1 pt-2 text-xs font-bold uppercase tracking-widest text-mute">Notificações</p>` +
+    (items.length
+      ? items.map(n => `<div class="rounded-lg px-3 py-2.5 hover:bg-white/5"><p class="text-sm font-bold">${esc(n.title)}</p><p class="text-sm text-mute">${esc(n.message)}</p></div>`).join('')
+      : `<p class="px-3 py-3 text-sm text-mute">Nenhum conteúdo novo por enquanto. Quando um filme, série ou canal for adicionado, ele aparecerá aqui.</p>`);
+}
+renderNotifPanel();
 $('#pp').innerHTML = `<div class="flex items-center gap-3 px-3 py-3"><span class="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-accent to-accent2 font-extrabold text-bg">V</span><div><p class="font-bold leading-tight">Visitante</p><p class="text-xs text-mute">Perfil principal</p></div></div><div class="my-1 h-px bg-line"></div>` +
   ['Gerenciar catálogo', 'Trocar de perfil', 'Perfil Kids', 'Conta e assinatura', 'Sair'].map((t, i) => `<button class="block w-full rounded-lg px-3 py-2.5 text-left text-sm hover:bg-white/5" data-act="${i === 0 ? 'gerenciar' : 'demo'}"${i === 0 ? ' data-owner hidden' : ''}>${t}</button>`).join('');
 function closePops() { ['pn', 'pp'].forEach(id => $('#' + id).hidden = true); }
@@ -997,6 +1025,7 @@ function saveEditor() {
   const target = ed.id != null ? (isC ? CH.find(c => c.id === ed.id) : BY[ed.id]) : (isC ? CH[CH.length - 1] : DATA[DATA.length - 1]);
   const done = () => {
     saveCatalog(); closeEditor();
+    renderNotifPanel();
     if (state.view === 'gerenciar') state.mtab = isC ? 'c' : k;
     toast(wasNew ? title + ' foi adicionado ao catálogo' : title + ' foi atualizado');
     refresh();
@@ -1177,7 +1206,13 @@ document.addEventListener('click', e => {
   switch (d.act) {
     case 'search': openSearch(); break;
     case 'closesearch': closeSearch(); break;
-    case 'notif': togglePop('pn'); $('#dot').hidden = true; break;
+    case 'notif': {
+      const latest = getCatalogNotifications().reduce((m, x) => Math.max(m, x.time), 0);
+      if (latest) store.set(NOTIF_SEEN_KEY, latest);
+      renderNotifPanel();
+      togglePop('pn');
+      break;
+    }
     case 'prof': togglePop('pp'); break;
     case 'closedetail': closeDetail(); break;
     case 'pstart': startPlay(); break;
@@ -1227,7 +1262,7 @@ function applyShared() {
     DATA = clone(BASE_ITEMS); CH = clone(BASE_CH); GENRES = [...BASE_GENRES];
     known.items = new Map(); known.channels = new Map(); known.meta = '';
   }
-  reindex(); refresh();
+  reindex(); refresh(); renderNotifPanel();
 }
 async function initShared() {
   if (!window.claude || !window.claude.use) return;
