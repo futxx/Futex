@@ -747,6 +747,23 @@ function stopPlayer() {
   }
   state.started = false; state.playing = false;
 }
+function renderEpisodes(it) {
+  const episodes = Array.isArray(it.episodes) ? [...it.episodes].sort((a,b) => (a.season-b.season)||(a.number-b.number)) : [];
+  if (!episodes.length) return `<div class="mt-3 rounded-xl border border-line p-4"><h3 class="font-display text-lg font-extrabold">Episódios</h3><p class="mt-2 text-sm text-mute">Ainda não há episódios cadastrados.</p></div>`;
+  const seasons = [...new Set(episodes.map(ep => ep.season))];
+  return `<section class="mt-3 grid gap-3"><h3 class="font-display text-lg font-extrabold">Episódios</h3>${seasons.map(season => `<div class="rounded-xl border border-line p-3"><h4 class="mb-2 font-bold">Temporada ${season}</h4><div class="grid gap-2">${episodes.filter(ep => ep.season === season).map(ep => `<button type="button" class="flex items-center gap-3 rounded-lg bg-bg/50 p-3 text-left hover:bg-white/5" data-act="playepisode" data-arg="${season}:${ep.number}"><span class="grid h-10 w-10 flex-none place-items-center rounded-lg bg-accent/15 text-accent">${ic('play','h-4 w-4 fill-current')}</span><span class="min-w-0 flex-1"><span class="block text-sm font-bold">EP ${ep.number} · ${esc(ep.title || `Episódio ${ep.number}`)}</span><span class="block text-xs text-mute">Temporada ${season}</span></span></button>`).join('')}</div></div>`).join('')}</section>`;
+}
+function playEpisode(season, number) {
+  const series = state.cur && BY[state.cur.id] ? BY[state.cur.id] : state.cur;
+  if (!series || !Array.isArray(series.episodes)) return;
+  const ep = series.episodes.find(x => x.season === season && x.number === number);
+  if (!ep || !ep.src) return toast('Link deste episódio não encontrado.');
+  stopPlayer();
+  const virtual = {...series, title: `${series.title} — T${season} E${number}`, src: ep.src, hasVideo: !!ep.hasVideo, episodeKey: `e:${series.id}:${season}:${number}`, vid: null, mins: 48};
+  Object.assign(state, {cur: virtual, total: 48*60, pos: 0, started: false, playing: false});
+  $('#dtitle').textContent = virtual.title;
+  startPlay();
+}
 function openDetail(id, play) {
   const it = BY[id]; if (!it) return;
   stopPlayer();
@@ -771,6 +788,7 @@ function openDetail(id, play) {
         <button type="button" class="btn btn-primary" data-act="pstart">${ic('play', 'h-5 w-5 fill-current')}${prev > 0 ? 'Continuar' : 'Assistir'}</button>
         ${togBtn(it.id, 'btn btn-ghost', true)}
       </div>
+      ${it.type === 's' ? renderEpisodes(it) : ''}
       ${sim.length ? `<h3 class="mt-2 font-display text-lg font-extrabold">Títulos semelhantes</h3><div class="grid grid-cols-3 gap-3 sm:grid-cols-6">${sim.map(s => posterCard(s, true)).join('')}</div>` : ''}
     </div>`;
   $('#detail').hidden = false; syncLock(); updStage();
@@ -789,6 +807,20 @@ const refresh = () => { const y = scrollY; render(); scrollTo(0, y); };
 const genreChip = g => `<button type="button" class="chip" data-act="egenre" data-arg="${esc(g)}" aria-pressed="${ed.genres.has(g)}">${esc(g)}</button>`;
 const progRow = p => `<div class="flex items-center gap-2" data-prog><input class="inp f-ptitle min-w-0 flex-1" type="text" maxlength="60" value="${esc(p[0])}" placeholder="Nome do programa" aria-label="Nome do programa"><input class="inp f-pmin flex-none" style="width:6rem" type="number" min="5" max="600" value="${esc(p[1])}" aria-label="Duração em minutos"><button type="button" class="ctl flex-none" data-act="delprog" aria-label="Remover programa">${ic('x', 'h-4 w-4')}</button></div>`;
 
+const episodeRow = ep => `<div class="grid gap-2 rounded-xl border border-line bg-bg/40 p-3" data-episode>
+  <div class="grid grid-cols-2 gap-2"><label class="text-xs text-mute">Temporada<input class="inp f-eseason mt-1" type="number" min="1" max="60" value="${esc(ep.season || 1)}"></label><label class="text-xs text-mute">Episódio<input class="inp f-eepisode mt-1" type="number" min="1" max="9999" value="${esc(ep.number || 1)}"></label></div>
+  <input class="inp f-etitle" maxlength="80" value="${esc(ep.title || '')}" placeholder="Título do episódio (opcional)" aria-label="Título do episódio">
+  <input class="inp f-esrc" type="url" inputmode="url" value="${esc(ep.src || '')}" placeholder="Link do vídeo: https://..." aria-label="Link do vídeo do episódio">
+  <label class="text-xs text-mute">Ou enviar arquivo de vídeo<input class="inp f-efile mt-1" type="file" accept="video/mp4,video/webm,video/*"><span class="block mt-1">${ep.hasVideo ? `Arquivo salvo: ${esc(ep.vname || 'vídeo')}` : 'O arquivo fica salvo neste navegador.'}</span></label>
+  <button type="button" class="btn btn-ghost justify-self-end !min-h-[34px] !px-3 text-sm" data-act="delep">Remover episódio</button>
+</div>`;
+function episodeFields(v) {
+  const episodes = Array.isArray(v.episodes) ? [...v.episodes].sort((a,b) => (a.season-b.season)||(a.number-b.number)) : [];
+  return `<section class="grid gap-3 rounded-xl border border-line p-4"><div><h3 class="font-bold">Episódios da série</h3><p class="mt-1 text-xs text-mute">Cadastre cada episódio com temporada, número e link do vídeo. Eles aparecem automaticamente em ordem crescente.</p></div>
+    <div id="f-episodes" class="grid gap-3">${episodes.map(episodeRow).join('')}</div>
+    <button type="button" class="btn btn-ghost justify-self-start" data-act="addepisode">${ic('plus')}Adicionar episódio</button>
+  </section>`;
+}
 function itemFields(v, o) {
   const k = ed.kind;
   return `<div><label class="lbl" for="f-syn">Sinopse</label><textarea id="f-syn" class="inp" maxlength="400" placeholder="Conte em poucas linhas sobre o que é.">${o(v.syn)}</textarea></div>
@@ -821,6 +853,7 @@ function editorHTML(v) {
       ${editing ? '' : `<div><span class="lbl">O que você quer adicionar?</span><div class="flex flex-wrap gap-2" role="group" aria-label="Tipo de conteúdo">${kinds}</div></div>`}
       <div><label class="lbl" for="f-title">${isC ? 'Nome do canal' : 'Título'}</label><input id="f-title" class="inp" type="text" maxlength="80" autocomplete="off" value="${o(v.title ?? v.name)}" placeholder="${isC ? 'Ex.: Vela Cultura' : 'Ex.: Noite de Estreia'}"></div>
       ${isC ? channelFields(v, o) : itemFields(v, o)}
+      ${k === 's' ? episodeFields(v) : ''}
       <div><span class="lbl">Imagem de capa</span>
         <div class="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-start">
           <div id="f-prev" class="relative overflow-hidden rounded-lg ring-1 ring-white/10 ${isC ? 'aspect-video w-full sm:w-56' : 'aspect-[2/3] w-32'}"></div>
@@ -882,6 +915,7 @@ function videoFields(v, isC) {
 }
 async function getSrc(it, isC) {
   if (it.vid) return { url: assetUrl(it.vid), blob: false };
+  if (it.episodeKey && it.hasVideo) { const b = await vdb.get(it.episodeKey); if (b) return { url: URL.createObjectURL(b), blob: true }; }
   if (it.hasVideo) { const b = await vdb.get(vkey(isC, it.id)); if (b) return { url: URL.createObjectURL(b), blob: true }; }
   if (it.src) return { url: it.src, blob: false };
   return null;
@@ -948,6 +982,7 @@ function openEditor(kind, item) {
     genres: new Set((item && item.genres) || []), tags: new Set((item && item.tags) || []),
     img: (item && (item.img || (item.imgId ? assetUrl(item.imgId) : ''))) || '', imgBlob: null,
     progs: item && item.progs ? item.progs.map(p => [p[0], p[1]]) : [['', 60]],
+    episodes: item && Array.isArray(item.episodes) ? item.episodes.map(ep => ({...ep})) : [],
     videoFile: null, rmVideo: false, hasVideo: !!(item && (item.hasVideo || item.vid)), vname: (item && item.vname) || ''
   });
   $('#epanel').innerHTML = editorHTML(item || {});
@@ -962,6 +997,8 @@ function readForm() {
   const g = id => { const el = $('#' + id); return el ? el.value : ''; };
   const rows = [...document.querySelectorAll('#f-progs [data-prog]')];
   if ($('#f-progs')) ed.progs = rows.map(r => [r.querySelector('.f-ptitle').value, r.querySelector('.f-pmin').value]);
+  const erows = [...document.querySelectorAll('#f-episodes [data-episode]')];
+  if ($('#f-episodes')) ed.episodes = erows.map(r => ({ season: Number(r.querySelector('.f-eseason').value), number: Number(r.querySelector('.f-eepisode').value), title: r.querySelector('.f-etitle').value.trim(), src: r.querySelector('.f-esrc').value.trim(), file: r.querySelector('.f-efile')?.files?.[0] || null, hasVideo: !!(ed.episodes.find(ep => ep.season === Number(r.querySelector('.f-eseason').value) && ep.number === Number(r.querySelector('.f-eepisode').value)) || {}).hasVideo, vname: (ed.episodes.find(ep => ep.season === Number(r.querySelector('.f-eseason').value) && ep.number === Number(r.querySelector('.f-eepisode').value)) || {}).vname || '' }));
   return { title: g('f-title'), syn: g('f-syn'), year: g('f-year'), age: g('f-age'), len: g('f-len'), n: g('f-n'), src: g('f-src'), hue: g('f-hue'), shape: g('f-shape') };
 }
 function updPreview() {
@@ -1015,15 +1052,28 @@ function saveEditor() {
     if (!(year >= 1900 && year <= 2100)) return formError('Informe um ano entre 1900 e 2100.', '#f-year');
     if (!(len >= 1 && len <= (k === 'f' ? 600 : 60))) return formError(k === 'f' ? 'A duração deve ter entre 1 e 600 minutos.' : 'Informe de 1 a 60 temporadas.', '#f-len');
     const genres = GENRES.filter(g => ed.genres.has(g));
+    if (k === 's') {
+      for (const ep of ed.episodes) {
+        if (!(ep.season >= 1 && ep.season <= len) || !(ep.number >= 1 && ep.number <= 9999)) return formError('Confira a temporada e o número de cada episódio.', '#f-episodes input');
+        const clean = cleanSrc(ep.src); if (clean === false || (!clean && !ep.file && !ep.hasVideo)) return formError('Informe um link válido ou envie um arquivo para cada episódio cadastrado.', '#f-episodes .f-esrc'); ep.src = clean || '';
+      }
+      ed.episodes.sort((a,b) => (a.season-b.season)||(a.number-b.number));
+      for (let i=1;i<ed.episodes.length;i++) if (ed.episodes[i].season===ed.episodes[i-1].season && ed.episodes[i].number===ed.episodes[i-1].number) return formError('Não repita o número de episódio dentro da mesma temporada.', '#f-episodes input');
+    }
     if (!genres.length) return formError('Escolha pelo menos um gênero ou crie um novo.', '#f-genres button, #f-newgenre');
-    const data = { title, type: k, year, age: f.age === 'L' ? 'L' : +f.age, genres, len, mins: k === 'f' ? len : 48, syn: f.syn.trim() || 'Sem sinopse.', tags: TAGS.filter(t => ed.tags.has(t)), hue, shape: f.shape, img: ed.img, src };
+    const data = { title, type: k, year, age: f.age === 'L' ? 'L' : +f.age, genres, len, ...(k === 's' ? { episodes: ed.episodes.map(ep => ({...ep})) } : {}), mins: k === 'f' ? len : 48, syn: f.syn.trim() || 'Sem sinopse.', tags: TAGS.filter(t => ed.tags.has(t)), hue, shape: f.shape, img: ed.img, src };
     const old = ed.id != null ? BY[ed.id] : null;
     if (old) Object.assign(old, data);
     else DATA.push({ id: Math.max(0, ...DATA.map(d => d.id)) + 1, score: 80, added: Date.now(), ...data });
   }
   const wasNew = ed.id == null;
   const target = ed.id != null ? (isC ? CH.find(c => c.id === ed.id) : BY[ed.id]) : (isC ? CH[CH.length - 1] : DATA[DATA.length - 1]);
-  const done = () => {
+  const done = async () => {
+    if (!isC && k === 's' && Array.isArray(target.episodes)) {
+      for (const ep of target.episodes) {
+        if (ep.file) { const ok = await vdb.put(`e:${target.id}:${ep.season}:${ep.number}`, ep.file); if (!ok) toast('Não foi possível salvar o arquivo do episódio.'); else { ep.hasVideo = true; ep.vname = ep.file.name; } delete ep.file; }
+      }
+    }
     saveCatalog(); closeEditor();
     renderNotifPanel();
     if (state.view === 'gerenciar') state.mtab = isC ? 'c' : k;
@@ -1160,6 +1210,9 @@ function catalogAction(act, d, t) {
     case 'etag': ed.tags.has(d.arg) ? ed.tags.delete(d.arg) : ed.tags.add(d.arg); t.setAttribute('aria-pressed', ed.tags.has(d.arg)); break;
     case 'addgenre': addGenreFromInput(); break;
     case 'addprog': { $('#f-progs').insertAdjacentHTML('beforeend', progRow(['', 30])); $('#f-progs').lastElementChild.querySelector('input').focus(); break; }
+    case 'addepisode': { const rows = [...document.querySelectorAll('#f-episodes [data-episode]')]; const last = rows.length ? rows[rows.length-1] : null; const season = last ? Math.max(1, +last.querySelector('.f-eseason').value || 1) : 1; const number = last && +last.querySelector('.f-eseason').value === season ? (+last.querySelector('.f-eepisode').value || 0)+1 : 1; $('#f-episodes').insertAdjacentHTML('beforeend', episodeRow({season, number})); break; }
+    case 'delep': t.closest('[data-episode]').remove(); break;
+    case 'playepisode': { const [season, number] = d.arg.split(':').map(Number); playEpisode(season, number); break; }
     case 'delprog': t.closest('[data-prog]').remove(); break;
     case 'rmvideo': { ed.videoFile = null; ed.rmVideo = true; const vi = $('#f-video'); if (vi) vi.value = ''; const si = $('#f-src'); if (si) si.value = ''; updVStatus(); break; }
     case 'rmimg': { ed.img = ''; ed.imgBlob = null; const fi = $('#f-file'); if (fi) fi.value = ''; updPreview(); break; }
