@@ -4,9 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="supabase-shim.js"></script>
 </head>
 <body>
 <title>Vela Play</title>
@@ -910,7 +908,7 @@ function videoFields(v, isC) {
     <div class="grid gap-3">
       <div><label class="lbl" for="f-video">Enviar arquivo de vídeo (MP4 ou WebM)</label><input id="f-video" class="inp" type="file" accept="video/*"><p id="f-vstatus" class="mt-2 text-sm text-mute">${esc(videoStatus())}</p><button type="button" class="btn btn-ghost mt-2 !min-h-[36px] !px-3 text-sm" data-act="rmvideo">Remover vídeo</button></div>
       <div><label class="lbl" for="f-src">Ou link do vídeo${isC ? ' ou da transmissão (.m3u8)' : ''}</label><input id="f-src" class="inp" type="url" inputmode="url" placeholder="https://exemplo.com/video.mp4" value="${esc(v.src || '')}" autocomplete="off"></div>
-      <p class="text-xs text-mute">${MODE === 'shared' ? 'Envie um arquivo (até ' + MAX_MB + ' MB) ou cole o link de um vídeo hospedado. Para filmes inteiros, hospede o arquivo em um serviço de vídeo e cole o link aqui.' : 'O arquivo enviado fica salvo neste navegador. Na página publicada pelo Claude, links externos podem ser bloqueados; nesse caso envie o arquivo ou abra o HTML baixado.'}</p>
+      <p class="text-xs text-mute">${MODE === 'shared' ? 'O envio direto de vídeos ainda não está conectado. Cole o link de um vídeo hospedado. Para filmes inteiros, hospede o arquivo em um serviço de vídeo e cole o link aqui.' : 'O arquivo enviado fica salvo neste navegador. Na página publicada pelo Claude, links externos podem ser bloqueados; nesse caso envie o arquivo ou abra o HTML baixado.'}</p>
     </div></div>`;
 }
 async function getSrc(it, isC) {
@@ -985,9 +983,15 @@ function openEditor(kind, item) {
     episodes: item && Array.isArray(item.episodes) ? item.episodes.map(ep => ({...ep})) : [],
     videoFile: null, rmVideo: false, hasVideo: !!(item && (item.hasVideo || item.vid)), vname: (item && item.vname) || ''
   });
-  $('#epanel').innerHTML = editorHTML(item || {});
-  $('#editor').hidden = false; syncLock(); updPreview();
-  $('#epanel').scrollTop = 0; $('#f-title').focus();
+  const panel = $('#epanel'), modal = $('#editor');
+  if (!panel || !modal) throw new Error('A janela do formulário não foi encontrada no HTML.');
+  panel.innerHTML = editorHTML(item || {});
+  modal.hidden = false;
+  syncLock();
+  updPreview();
+  panel.scrollTop = 0;
+  const titleInput = $('#f-title');
+  if (titleInput) titleInput.focus();
 }
 function closeEditor() {
   $('#editor').hidden = true; syncLock();
@@ -1238,6 +1242,26 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============ Events ============ */
+// Tratamento prioritário dos botões de adicionar: funciona mesmo quando o
+// conteúdo interno do botão é um SVG/span e exibe o erro real se o editor falhar.
+document.addEventListener('click', e => {
+  let el = e.target;
+  while (el && el !== document && !(el.matches && el.matches('[data-act="add"]'))) el = el.parentElement;
+  if (!el || el === document) return;
+  e.preventDefault();
+  e.stopPropagation();
+  try {
+    if (!IS_OWNER) {
+      toast('Entre no ADMIN novamente para adicionar conteúdo.');
+      return;
+    }
+    const kind = el.getAttribute('data-arg') || ({ filmes: 'f', series: 's', 'ao-vivo': 'c' }[state.view] || 'f');
+    openEditor(kind, null);
+  } catch (err) {
+    console.error('Erro ao abrir editor:', err);
+    toast('Erro ao abrir formulário: ' + (err && err.message ? err.message : 'verifique o console'));
+  }
+}, true);
 document.addEventListener('click', e => {
   if (e.target === $('#detail')) return closeDetail();
   if (e.target === $('#editor')) return closeEditor();
@@ -1294,82 +1318,69 @@ document.addEventListener('keydown', e => {
 });
 setInterval(() => { if (state.view === 'ao-vivo' && !modalOpen() && !document.querySelector('#livestage video')) { const y = scrollY; render(); scrollTo(0, y); } }, 60000);
 
-/* ============ Catálogo compartilhado (db) ============ */
-/* Na página publicada, o catálogo vive no banco do artefato: todos leem ao vivo e só o dono grava (regra do banco).
-   Sem banco (arquivo baixado, visitante sem login), continua valendo o catálogo salvo neste navegador. */
-let MODE = 'local', DBH = null, ASSETS = null, syncing = false, again = false, syncT = 0;
-const known = { items: new Map(), channels: new Map(), meta: '' };
-const S = { items: new Map(), channels: new Map(), meta: null };
+/* ============ Catálogo compartilhado via Supabase Edge Function ============ */
+const VELA_API = 'https://mqqlmtgldrjtjvxufpmh.supabase.co/functions/v1/vela-admin';
+const VELA_PUBLIC_KEY = 'sb_publishable_ThPjCjozfFVomlqBevSWfg_xCh_GY1l';
+let MODE = 'local', syncing = false, again = false, syncT = 0;
+let ADMIN_PIN = '', remoteEmpty = false;
 const clone = x => JSON.parse(JSON.stringify(x));
-const idn = id => parseInt(String(id).replace(/\D/g, ''), 10) || 0;
-const canon = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)) ? Object.fromEntries(Object.keys(x).sort().map(y => [y, x[y]])) : x);
-function applyShared() {
-  if (S.meta) {
-    DATA = [...S.items.values()].map(clone).sort((a, b) => a.id - b.id);
-    CH = [...S.channels.values()].map(clone).sort((a, b) => idn(a.id) - idn(b.id));
-    GENRES = [...(S.meta.genres || [])];
-    known.items = new Map([...S.items].map(([k, v]) => [k, canon(v)]));
-    known.channels = new Map([...S.channels].map(([k, v]) => [k, canon(v)]));
-    known.meta = canon(S.meta);
-  } else {
-    DATA = clone(BASE_ITEMS); CH = clone(BASE_CH); GENRES = [...BASE_GENRES];
-    known.items = new Map(); known.channels = new Map(); known.meta = '';
-  }
-  reindex(); refresh(); renderNotifPanel();
-}
 async function initShared() {
-  if (!window.claude || !window.claude.use) return;
-  let db = null;
-  try { db = await window.claude.use('db'); } catch (e) {}
-  if (!db) return;
-  try { ASSETS = await window.claude.use('assets'); } catch (e) { ASSETS = null; }
-  DBH = db; MODE = 'shared';
-  const got = { i: false, c: false, m: false };
-  const maybe = () => { if (got.i && got.c && got.m) applyShared(); };
-  const quiet = () => {};
-  db.collection('items').onSnapshot(sn => { S.items = new Map(sn.docs.map(d => [d.id, d.data()])); got.i = true; maybe(); }, quiet);
-  db.collection('channels').onSnapshot(sn => { S.channels = new Map(sn.docs.map(d => [d.id, d.data()])); got.c = true; maybe(); }, quiet);
-  db.doc('meta/catalog').onSnapshot(sn => { S.meta = sn.exists ? sn.data() : null; got.m = true; maybe(); }, quiet);
+  try {
+    const res = await fetch(VELA_API, { method: 'GET', headers: { 'Accept': 'application/json', 'apikey': VELA_PUBLIC_KEY }, cache: 'no-store' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erro || 'Falha ao consultar o catálogo.');
+    MODE = 'shared';
+    if (data.catalogo && Array.isArray(data.catalogo.items) && Array.isArray(data.catalogo.channels) && Array.isArray(data.catalogo.genres)) {
+      DATA = clone(data.catalogo.items);
+      CH = clone(data.catalogo.channels);
+      GENRES = [...data.catalogo.genres];
+      remoteEmpty = false;
+      reindex(); refresh(); renderNotifPanel();
+    } else {
+      remoteEmpty = true;
+      toast('Supabase conectado. O catálogo ainda está vazio; entre no ADMIN para publicar o catálogo atual.');
+    }
+  } catch (e) {
+    MODE = 'local';
+    console.error('Vela Play Supabase:', e);
+    toast('Não foi possível conectar ao Supabase. O catálogo continua apenas neste navegador.');
+  }
 }
-function queueSync() { clearTimeout(syncT); syncT = setTimeout(syncShared, 250); }
+function queueSync() { clearTimeout(syncT); syncT = setTimeout(syncShared, 500); }
 async function syncShared() {
+  if (MODE !== 'shared') return;
+  if (!ADMIN_PIN) { toast('Entre no ADMIN para autorizar o salvamento no Supabase.'); return; }
   if (syncing) { again = true; return; }
   syncing = true;
-  let err = null;
   try {
-    const ops = [];
-    const plan = (col, list, map) => {
-      const cur = new Map(list.map(d => [String(d.id), canon(d)]));
-      cur.forEach((j, id) => { if (map.get(id) !== j) ops.push(async () => { await DBH.doc(col + '/' + id).set(JSON.parse(j)); map.set(id, j); }); });
-      [...map.keys()].forEach(id => { if (!cur.has(id)) ops.push(async () => { await DBH.doc(col + '/' + id).delete(); map.delete(id); }); });
-    };
-    plan('items', DATA, known.items);
-    plan('channels', CH, known.channels);
-    let i = 0;
-    const worker = async () => { while (i < ops.length) { const f = ops[i++]; try { await f(); } catch (e) { err = err || e; } } };
-    await Promise.all([worker(), worker(), worker()]);
-    const metaJ = canon({ seeded: true, genres: GENRES });
-    if (!err && known.meta !== metaJ) { try { await DBH.doc('meta/catalog').set(JSON.parse(metaJ)); known.meta = metaJ; } catch (e) { err = e; } }
-  } finally { syncing = false; }
-  if (err) {
-    const c = err && err.code;
-    toast(c === 'invalid_argument' ? 'Sem permissão para salvar para todos. Abra a página com a conta dona.' : c === 'quota_exceeded' ? 'O limite de armazenamento do catálogo foi atingido.' : 'Não foi possível salvar para todos agora. Tente de novo.');
+    const catalogo = { items: DATA, channels: CH, genres: GENRES };
+    const res = await fetch(VELA_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'apikey': VELA_PUBLIC_KEY },
+      body: JSON.stringify({ pin: ADMIN_PIN, catalogo })
+    });
+    const data = await res.json();
+    if (!res.ok || data.ok === false) throw new Error(data.erro || data.message || 'Não foi possível salvar.');
+    remoteEmpty = false;
+    toast('Catálogo salvo no Supabase para todos!');
+  } catch (e) {
+    console.error('Vela Play Supabase:', e);
+    toast('Erro ao salvar no Supabase: ' + (e.message || 'verifique a conexão e o PIN.'));
+  } finally {
+    syncing = false;
+    if (again) { again = false; queueSync(); }
   }
-  if (again) { again = false; queueSync(); }
 }
 function dropAssets(t) {
-  if (MODE === 'shared' && ASSETS) [t.imgId, t.vid].filter(Boolean).forEach(id => ASSETS.delete(id).catch(() => {}));
+  /* Arquivos de mídia precisam de Storage próprio; esta função sincroniza o catálogo/metadados. */
 }
 async function persistMediaShared(t, vf) {
-  const drop = id => { if (id && ASSETS) ASSETS.delete(id).catch(() => {}); };
+  const drop = id => {}; 
   try {
-    if (ASSETS && ed.imgBlob) { const r = await ASSETS.upload(ed.imgBlob, { type: 'image/jpeg' }); drop(t.imgId); t.imgId = r.id; t.img = ''; }
-    else if (ASSETS && isAssetUrl(ed.img)) { t.imgId = assetIdOf(ed.img); t.img = ''; }
-    else if (!ed.img) { drop(t.imgId); t.imgId = ''; }
+    if (ed.imgBlob) { toast('O catálogo foi conectado, mas o envio de imagens ao Storage ainda precisa ser configurado.'); }
+    else if (!ed.img) { t.imgId = ''; }
     if (vf) {
-      if (!ASSETS) toast('Enviar vídeo não está disponível agora.');
-      else if (vf.size > MAX_MB * 1048576) toast('O vídeo passa de ' + MAX_MB + ' MB, o limite de envio. Para vídeos grandes, hospede o arquivo e cole o link.');
-      else { const r = await ASSETS.upload(vf, { type: vf.type || 'video/mp4' }); drop(t.vid); t.vid = r.id; t.vname = vf.name; }
+      toast('O envio direto de vídeos ainda não está conectado ao Storage. Use um link de vídeo hospedado por enquanto.');
     } else if (ed.rmVideo) { drop(t.vid); t.vid = ''; t.vname = ''; }
   } catch (e) { toast('Não foi possível enviar o arquivo (' + ((e && e.code) || 'erro') + ').'); }
 }
@@ -1381,8 +1392,7 @@ async function importLocal() {
   for (const [t, isC] of [...DATA.map(d => [d, false]), ...CH.map(c => [c, true])]) {
     if (!t.hasVideo) continue;
     const b = await vdb.get(vkey(isC, t.id));
-    if (b && ASSETS && b.size <= MAX_MB * 1048576) { try { const r = await ASSETS.upload(b, { type: b.type || 'video/mp4' }); t.vid = r.id; } catch (e) { skipped++; } }
-    else skipped++;
+    if (b) skipped++; else skipped++;
     t.hasVideo = false;
   }
   saveCatalog(); refresh();
@@ -1431,7 +1441,8 @@ function checkPin() {
   const inp = $('#pin-input'), err = $('#pin-err');
   if (Date.now() < pinLockUntil) { err.textContent = 'Muitas tentativas. Aguarde alguns segundos.'; inp.value = ''; return; }
   if (cyrb53('vela-play:' + inp.value.trim()) === PIN_HASH) {
-    pinFails = 0; UNLOCKED = true; closeGate(); syncAccess();
+    pinFails = 0; ADMIN_PIN = inp.value.trim(); UNLOCKED = true; closeGate(); syncAccess();
+    if (MODE === 'shared' && remoteEmpty) syncShared();
     if (location.hash === '#gerenciar') render(); else location.hash = 'gerenciar';
   } else {
     pinFails++;
@@ -1454,6 +1465,5 @@ initShared();
 route();
 </script>
 
-<script src="login.js"></script>
 </body>
 </html>
